@@ -419,7 +419,7 @@ interface WebGPURenderPipeline {
 
 /// Common interface for render and compute pass encoders.
 interface WebGPUProgrammablePassEncoder {
-    WebGPUCommandBuffer endPass();
+    WebGPUCommandEncoder endPass();
     // Allowed in both compute and render passes
     //TODO: setPushConstants() ?
     void setBindGroup(u32 index, WebGPUBindGroup bindGroup);
@@ -464,7 +464,13 @@ dictionary WebGPURenderPassDescriptor {
     WebGPURenderPassAttachmentDescriptor depthStencilAttachmaent;
 };
 
+[Transferable]
 interface WebGPUCommandBuffer {
+};
+
+interface WebGPUCommandEncoder {
+    WebGPUCommandBuffer finishEncoding();
+
     WebGPURenderPassEncoder beginRenderPass(WebGPURenderPassDescriptor descriptor);
     WebGPUComputePassEncoder beginComputePass();
 
@@ -481,7 +487,7 @@ interface WebGPUCommandBuffer {
     void blit();
 };
 
-dictionary WebGPUCommandBufferDescriptor {
+dictionary WebGPUCommandEncoderDescriptor {
     //TODO: reusability flag?
 };
 
@@ -528,6 +534,7 @@ dictionary WebGPULimits {
 };
 
 // Device
+// When a WebGPUDevice is sent via postMessage, it is cloned, allowing it to be used from both threads.
 interface WebGPUDevice {
     readonly attribute WebGPUExtensions extensions;
     readonly attribute WebGPULimits limits;
@@ -549,7 +556,7 @@ interface WebGPUDevice {
     WebGPUComputePipeline createComputePipeline(WebGPUComputePipelineDescriptor descriptor);
     WebGPURenderPipeline createRenderPipeline(WebGPURenderPipelineDescriptor descriptor);
 
-    WebGPUCommandBuffer createCommandBuffer(WebGPUCommandBufferDescriptor descriptor);
+    WebGPUCommandEncoder createCommandEncoder(WebGPUCommandEncoderDescriptor descriptor);
     WebGPUFence createFence(WebGPUFenceDescriptor descriptor);
 
     WebGPUQueue getQueue();

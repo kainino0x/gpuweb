@@ -1,0 +1,91 @@
+<script>
+// Proof-of-concept API mockup
+'use strict';
+{
+    class WebGPU {
+        constructor() {}
+        requestAdapter(desc) { return Promise.resolve(new WebGPUAdapter(desc)); }
+    }
+    class WebGPUAdapter {
+        constructor(desc) {}
+        get extensions() {
+            // Contains a key if the browser supports it, key is true if
+            // the hardware supports it.
+            return Object.assign({}, window.mockExtensionsSupported);
+        }
+        getDevice(desc) { return new WebGPUDevice(desc); }
+    }
+    class WebGPUDevice {
+        constructor(desc) {
+            this.extensions = desc.extensions;
+        }
+        createBuffer(desc) { new WebGPUBuffer(this, desc); }
+    }
+    class WebGPUBuffer {
+        constructor(device, desc) {
+            //if (device.extensions
+        }
+    }
+
+    window.webgpu = new WebGPU();
+}
+
+async function test(args) {
+    console.log("test with args =", args, ",",
+        "mockExtensionsSupported =", window.mockExtensionsSupported)
+    const { requestExtension, useExtension } = args;
+
+    const adapter = await webgpu.requestAdapter();
+    const device = adapter.getDevice({
+        extensions: {
+            bufferFrobulator: requestExtension,
+        },
+    });
+    const bufferDesc = {
+        nonExtensionParameter: 'default',
+    };
+    if (useExtension) {
+        bufferDesc.nonExtensionParameter = 'frobulable';
+        bufferDesc.frobulationFactor = 4;
+    }
+    const buffer = device.getBuffer(bufferDesc);
+}
+
+function testPass(e) { console.log('pass', e); }
+function testFail(e) { console.error('FAIL', e); }
+function should(expected, promise) {
+    if (expected === 'pass') {
+        return promise.then(testPass, testFail);
+    } else if (expected === 'fail') {
+        return promise.then(testFail, testPass);
+    } else {
+        throw new Error('bad should() call');
+    }
+}
+
+(async function() {
+    // Example: Without browser support.
+    {
+        window.mockExtensionsSupported = {
+        };
+        await should('pass', test({ requestExtension: false, useExtension: false }));
+        await should('fail', test({ requestExtension: false, useExtension: true }));
+        await should('fail', test({ requestExtension: true, useExtension: false }));
+        await should('fail', test({ requestExtension: true, useExtension: true }));
+    }
+
+    // Example: With browser support but not hardware support.
+    {
+        window.mockExtensionsSupported = {
+            bufferFrobulator: false,
+        };
+    }
+
+    // Example: With browser support and hardware support.
+    {
+        window.mockExtensionsSupported = {
+            bufferFrobulator: true,
+        };
+    }
+})();
+</script>

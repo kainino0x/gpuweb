@@ -1,6 +1,8 @@
 typedef long i32;
 typedef unsigned long u32;
 typedef unsigned long long u64;
+typedef u32 GPUShaderAttributeIndex;
+typedef u32 GPUVertexBufferIndex;
 
 dictionary GPUColor {
     float r;
@@ -366,7 +368,7 @@ dictionary GPUDepthStencilStateDescriptor {
     u32 stencilWriteMask;
 };
 
-// InputState
+// VertexBufferState
 
 enum GPUIndexFormat {
     "uint16",
@@ -386,25 +388,333 @@ enum GPUInputStepMode {
     "instance"
 };
 
+// For all of these options:
+// Con: Doesn't structurally prevent attribute collisions:
+//        [ { attributes: [ {attributeIndex:0}, {attributeIndex:1} ] } ]
+//      or
+//        [ { attributes: [{attributeIndex:0}] }, { attributes: [{attributeIndex:0}] } ]
+
+// ****************************************************************************
+// OPTION 1: GPUVertexBufferEntry + GPUVertexBufferDescriptor
+// ****************************************************************************
+// Cons:
+// * Makes things slightly more verbose.
+// * Doesn't structurally prevent vertex buffer index collisions:
+//        { vertexBuffers: [ {index:0}, {index:0} ] }
+
 dictionary GPUVertexAttributeDescriptor {
-    u32 shaderLocation;
-    u32 inputSlot;
     u32 offset;
     GPUVertexFormat format;
+    GPUShaderAttributeIndex attributeIndex;
 };
 
-dictionary GPUVertexInputDescriptor {
-    u32 inputSlot;
+dictionary GPUVertexBufferDescriptor {
     u32 stride;
     GPUInputStepMode stepMode;
+    sequence<GPUVertexAttributeDescriptor> attributes;
 };
 
-dictionary GPUInputStateDescriptor {
+dictionary GPUVertexBufferEntry {
+    GPUVertexBufferIndex index;
+    GPUVertexBufferDescriptor vertexBuffer;
+};
+
+dictionary GPUVertexBufferStateDescriptor {
+    GPUIndexFormat indexFormat;
+    sequence<GPUVertexBufferEntry> vertexBuffers;
+};
+
+// const desc = {
+//     indexFormat: "uint16",
+//     vertexBuffers: [
+//         {
+//             index: 0,
+//             vertexBuffer: {
+//                 stride: 16,
+//                 stepMode: "vertex",
+//                 attributes: [
+//                     {
+//                         offset: 0,
+//                         format: "floatR32G32B32",
+//                         attributeIndex: 0,
+//                     },
+//                     {
+//                         offset: 12,
+//                         format: "floatR32",
+//                         attributeIndex: 3,
+//                     },
+//                 ],
+//             }
+//         },
+//         {
+//             index: 2,
+//             vertexBuffer: {
+//                 stride: 8,
+//                 stepMode: "vertex",
+//                 attributes: [
+//                     {
+//                         offset: 0,
+//                         format: "floatR32G32",
+//                         attributeIndex: 2,
+//                     },
+//                 ],
+//             }
+//         },
+//     ],
+// };
+
+// ****************************************************************************
+// OPTION 2: GPUVertexBufferDescriptor with inlined index
+// ****************************************************************************
+// Cons:
+// * GPUVertexBufferDescriptor.index's "specialness" gets lost among the other keys.
+// * Doesn't structurally prevent vertex buffer index collisions.
+
+dictionary GPUVertexAttributeDescriptor {
+    u32 offset;
+    GPUVertexFormat format;
+    GPUShaderAttributeIndex attributeIndex;
+};
+
+dictionary GPUVertexBufferDescriptor {
+    GPUVertexBufferIndex index;
+
+    u32 stride;
+    GPUInputStepMode stepMode;
+    sequence<GPUVertexAttributeDescriptor> attributes;
+};
+
+dictionary GPUVertexBufferStateDescriptor {
+    GPUIndexFormat indexFormat;
+    sequence<GPUVertexBufferEntry> vertexBuffers;
+};
+
+// const desc = {
+//     indexFormat: "uint16",
+//     vertexBuffers: [
+//         {
+//             index: 0,
+//             stride: 16,
+//             stepMode: "vertex",
+//             attributes: [
+//                 {
+//                     offset: 0,
+//                     format: "floatR32G32B32",
+//                     attributeIndex: 0,
+//                 },
+//                 {
+//                     offset: 12,
+//                     format: "floatR32",
+//                     attributeIndex: 3,
+//                 },
+//             ],
+//         },
+//         {
+//             index: 2,
+//             stride: 8,
+//             stepMode: "vertex",
+//             attributes: [
+//                 {
+//                     offset: 0,
+//                     format: "floatR32G32",
+//                     attributeIndex: 2,
+//                 },
+//             ],
+//         },
+//     ],
+// };
+
+// ****************************************************************************
+// OPTION 3: sparse array
+// ****************************************************************************
+// Cons:
+// * "Sparse" array is actually a dense array of optionals, when passed to C++ (per WebIDL).
+// * `index` is hard to see if written as
+//     [a, undefined, b]
+//   rather than
+//     const vbs = []; vbs[0] = a; vbs[2] = b;
+
+dictionary GPUVertexAttributeDescriptor {
+    u32 offset;
+    GPUVertexFormat format;
+    GPUShaderAttributeIndex attributeIndex;
+};
+
+dictionary GPUVertexBufferDescriptor {
+    u32 stride;
+    GPUInputStepMode stepMode;
+    sequence<GPUVertexAttributeDescriptor> attributes;
+};
+
+dictionary GPUVertexBufferStateDescriptor {
+    GPUIndexFormat indexFormat;
+    sequence<GPUVertexBufferEntry?> vertexBuffers;
+};
+
+// const vertexBuffers = [];
+// vertexBuffers[0] = {
+//     stride: 16,
+//     stepMode: "vertex",
+//     attributes: [
+//         {
+//             offset: 0,
+//             format: "floatR32G32B32",
+//             attributeIndex: 0,
+//         },
+//         {
+//             offset: 12,
+//             format: "floatR32",
+//             attributeIndex: 3,
+//         },
+//     ],
+// };
+// vertexBuffers[2] = {
+//     stride: 16,
+//     stepMode: "vertex",
+//     attributes: [
+//         stride: 8,
+//         stepMode: "vertex",
+//         attributes: [
+//             {
+//                 offset: 0,
+//                 format: "floatR32G32",
+//                 attributeIndex: 2,
+//             },
+//         ],
+// };
+// const desc = { indexFormat: "uint16", vertexBuffers };
+
+// ****************************************************************************
+// OPTION 4: sparse object
+// ****************************************************************************
+// Cons:
+// * vertexBuffers is mostly untyped in IDL; must be deconstructed manually
+//   when passed to C++ (via WebIDL).
+
+dictionary GPUVertexAttributeDescriptor {
+    u32 offset;
+    GPUVertexFormat format;
+    GPUShaderAttributeIndex attributeIndex;
+};
+
+dictionary GPUVertexBufferDescriptor {
+    u32 stride;
+    GPUInputStepMode stepMode;
+    sequence<GPUVertexAttributeDescriptor> attributes;
+};
+
+dictionary GPUVertexBufferStateDescriptor {
     GPUIndexFormat indexFormat;
 
-    sequence<GPUVertexAttributeDescriptor> attributes;
-    sequence<GPUVertexInputDescriptor> inputs;
+    // This object has keys of 0..15 and values of type GPUVertexBufferDescriptor.
+    // (It's not possible in WebIDL to describe a dictionary with keys "0" through "15".)
+    object vertexBuffers;
 };
+
+// const desc = {
+//     indexFormat: "uint16",
+//     vertexBuffers: {
+//         0: {
+//             stride: 16,
+//             stepMode: "vertex",
+//             attributes: [
+//                 {
+//                     offset: 0,
+//                     format: "floatR32G32B32",
+//                     attributeIndex: 0,
+//                 },
+//                 {
+//                     offset: 12,
+//                     format: "floatR32",
+//                     attributeIndex: 3,
+//                 },
+//             ],
+//         },
+//         2: {
+//             stride: 8,
+//             stepMode: "vertex",
+//             attributes: [
+//                 {
+//                     offset: 0,
+//                     format: "floatR32G32",
+//                     attributeIndex: 2,
+//                 },
+//             ],
+//         },
+//     },
+// };
+
+// ****************************************************************************
+// OPTION 5: typed dictionary
+// ****************************************************************************
+// Cons:
+// * Real dumb
+
+dictionary GPUVertexAttributeDescriptor {
+    u32 offset;
+    GPUVertexFormat format;
+    GPUShaderAttributeIndex attributeIndex;
+};
+
+dictionary GPUVertexBufferDescriptor {
+    u32 stride;
+    GPUInputStepMode stepMode;
+    sequence<GPUVertexAttributeDescriptor> attributes;
+};
+
+dictionary GPUVertexBufferStateDescriptor {
+    GPUIndexFormat indexFormat;
+
+    GPUVertexBufferDescriptor? vertexBuffer0;
+    GPUVertexBufferDescriptor? vertexBuffer1;
+    GPUVertexBufferDescriptor? vertexBuffer2;
+    GPUVertexBufferDescriptor? vertexBuffer3;
+    GPUVertexBufferDescriptor? vertexBuffer4;
+    GPUVertexBufferDescriptor? vertexBuffer5;
+    GPUVertexBufferDescriptor? vertexBuffer6;
+    GPUVertexBufferDescriptor? vertexBuffer7;
+    GPUVertexBufferDescriptor? vertexBuffer8;
+    GPUVertexBufferDescriptor? vertexBuffer9;
+    GPUVertexBufferDescriptor? vertexBuffer10;
+    GPUVertexBufferDescriptor? vertexBuffer11;
+    GPUVertexBufferDescriptor? vertexBuffer12;
+    GPUVertexBufferDescriptor? vertexBuffer13;
+    GPUVertexBufferDescriptor? vertexBuffer14;
+    GPUVertexBufferDescriptor? vertexBuffer15;
+};
+
+// const desc = {
+//     indexFormat: "uint16",
+//     vertexBuffer0: {
+//         stride: 16,
+//         stepMode: "vertex",
+//         attributes: [
+//             {
+//                 offset: 0,
+//                 format: "floatR32G32B32",
+//                 attributeIndex: 0,
+//             },
+//             {
+//                 offset: 12,
+//                 format: "floatR32",
+//                 attributeIndex: 3,
+//             },
+//         ],
+//     },
+//     vertexBuffer2: {
+//         stride: 8,
+//         stepMode: "vertex",
+//         attributes: [
+//             {
+//                 offset: 0,
+//                 format: "floatR32G32",
+//                 attributeIndex: 2,
+//             },
+//         ],
+//     },
+// };
+
+// ****************************************************************************
 
 // ShaderModule
 
@@ -469,7 +779,7 @@ dictionary GPURenderPipelineDescriptor : GPUPipelineDescriptorBase {
     GPURasterizationStateDescriptor rasterizationState;
     sequence<GPUBlendStateDescriptor> blendStates;
     GPUDepthStencilStateDescriptor depthStencilState;
-    GPUInputStateDescriptor inputState;
+    GPUVertexBufferStateDescriptor vertexBufferState;
     GPUAttachmentsStateDescriptor attachmentsState;
     // Number of MSAA samples
     u32 sampleCount;

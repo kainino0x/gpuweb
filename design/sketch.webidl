@@ -25,29 +25,12 @@ dictionary GPUExtent3D {
 // ERROR HANDLING
 // ****************************************************************************
 
-enum GPULogEntryType {
-    "device-lost",
-    "validation-error",
-    "recoverable-out-of-memory"
+interface GPULogEntryEvent : Event {
+    readonly attribute any object;
+    readonly attribute DOMString reason;
 };
 
-interface GPULogEntry {
-    readonly attribute GPULogEntryType type;
-    readonly attribute any sourceObject;
-    readonly attribute DOMString? reason;
-};
-
-enum GPUObjectStatus {
-    "valid",
-    "out-of-memory",
-    "invalid"
-};
-
-typedef Promise<GPUObjectStatus> GPUObjectStatusQuery;
-
-typedef (GPUBuffer or GPUTexture) GPUStatusableObject;
-
-callback GPULogCallback = void (GPULogEntry error);
+partial interface GPUDevice : EventTarget {};
 
 // ****************************************************************************
 // SHADER RESOURCES (buffer, textures, texture views, samples)

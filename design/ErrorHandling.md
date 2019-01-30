@@ -23,59 +23,43 @@ There are several types of WebGPU calls that get their errors handled differentl
 Implementations should provide a way to enable synchronous validation, for example via a debug shim or via the developer tools.
 The extra overhead needs to be low enough that applications can still run while being debugged.
 
-## *Telemetry* \& *Fallback*: Error Logging
+## *Telemetry*: Error Logging
 
-`GPUDevice` keeps a log of errors that happened on each thread (main thread or Web Worker).
-The application "eventually" recieves these errors, asynchronously via a callback.
+```webidl
+interface GPULogEntryEvent : Event {
+    readonly attribute any object;
+    readonly attribute DOMString reason;
+};
+```
 
-These errors are all delivered through one stream - not directly associated with the objects or operations that produced them.
-They should not be used by applications to recover from expected, recoverable errors.
+`WebGPUDevice` `"gpulogentry"` -> `GPULogEntryEvent`:
+Fires when a non-fatal error occurs in the API, i.e. a validation error (including if an "invalid" object is used).
+
+When there is a validation error in the API (including operations on "invalid" WebGPU objects), an error is logged.
+When a validation error is discovered by the WebGPU implementation, it may fire `"gpulogentry"` event on the `GPUDevice`.
+These events should not be used by applications to recover from expected, recoverable errors.
 Instead, the error log may be used for handling unexpected errors in deployment, for bug reporting and telemetry.
 
-```
-enum GPULogEntryType {
-    "device-lost",
-    "validation-error",
-    "recoverable-out-of-memory",
-};
+`"gpulogentry"` events are all delivered through the device.
+They are not directly associated with the objects or operations that produced them.
 
-interface GPULogEntry {
-    readonly attribute GPULogEntryType type;
-    readonly attribute any object;
-    readonly attribute DOMString? reason;
-};
-
-callback GPULogCallback = void (GPULogEntry error);
-
-partial interface GPUDevice {
-    attribute GPULogCallback onLog;
-};
-```
-
-`GPUObjectStatusType` makes a distinction between several error types:
-
- - `"validation-error"`: validation of some WebGPU call failed - including if an argument was an "invalid object".
-   (Either the application did something wrong, or it chose not to recover from a recoverable error.)
- - `"device-lost"`: the `GPUDevice` cannot be used anymore.
-   This may happen if the device is destroyed by the application, reclaimed by the browser, or something goes terribly wrong.
-   (An application may request a new device, or choose to fallback to other content.)
- - `"out-of-memory"`: an allocation failed because too much memory was used by the application (CPU or GPU).
-   This includes recoverable out of memory errors that aren't opt-ed in to be handled by the application when the resource was created.
+The `"gpulogentry"` event always fires on the event loop where the error occurred.
+Event listeners must be set per event loop (i.e. on the main thread and on each worker).
+(TODO: This is necessary because of the `object` field.
+But it seems nicer to always fire on the main thread.
+Should the object be removed, replaced with only its debug label?)
 
 For creation errors, the `object` attribute holds the object handle that was created.
-(It will point to an "invalid" object.)
+(It will always point to an "invalid" object.)
 It preserves the JavaScript object wrapper of that handle (including any extra JavaScript properties attached to that wrapper).
 
-The `reason` is human-readable text, provided for debugging/reporting/telemetry.
+The `reason` is a human-readable string, provided for debugging/reporting/telemetry.
 
-When an error is reported by the WebGPU implementation, the `onLog` attribute, if set, receives this error (asynchronously).
-`onLog` is called once per error log entry.
-(If `onLog` is set or changed after some operation which logs an error, that error may or may not be sent to the new `onLog` handler.)
+The WebGPU implementation may choose not to fire the `"gpulogentry"` event for a given log entry if there have been too many errors, too many errors in a row, or too many errors of the same kind.
+(In badly-formed applications, this mechanism can prevent the `"gpulogentry"` events from having a significant performance impact on the system.)
 
-`onLog` may be called with a `"context-lost"`.
-If a `"context-lost"` error is logged, no other errors will be subsequently logged.
-
-The WebGPU implementation may choose to not log an error if too many errors, or too many errors of the same kind, have been logged.
+No `"gpulogentry"` events will be fired after the device is lost.
+(Though a there may be one "just before" the device is lost, if the error would be useful for telemetry.)
 
 ## Object Creation
 

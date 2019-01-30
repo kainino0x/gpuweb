@@ -7,7 +7,7 @@ There are a number of cases that developers or applications need error handling 
 
  - *Debugging*: Getting errors synchronously during development, to break in to the debugger.
  - *Telemetry*: Collecting error logs in deployment, for bug reporting and telemetry.
- - *Recovery*: Recovering from recoverable errors (like out-of-memory on resource creation).
+ - *Fallible Allocation*: Recovering from recoverable errors (like out-of-memory on resource creation).
  - *Fallback*: Tearing down the application and falling back, e.g. to WebGL, 2D Canvas, or static content.
 
 Meanwhile, error handling should not make the API clunky to use.
@@ -47,7 +47,8 @@ The `"gpulogentry"` event always fires on the event loop where the error occurre
 Event listeners must be set per event loop (i.e. on the main thread and on each worker).
 (TODO: This is necessary because of the `object` field.
 But it seems nicer to always fire on the main thread.
-Should the object be removed, replaced with only its debug label?)
+Should the object be removed?
+Its debug label can be included in the `reason` instead.)
 
 For creation errors, the `object` attribute holds the object handle that was created.
 (It will always point to an "invalid" object.)
@@ -80,61 +81,28 @@ The effect of an error depends on the type of a call:
 
 In each case, an error is logged to the error log.
 
-## *Recovery*: Recoverable Errors
+## *Fallible Allocation*: Out-of-memory in object creation
 
-Recoverable errors are produced only by object creation.
-The status of an object can be retrieved asynchronously (see next section).
+TODO: https://github.com/gpuweb/gpuweb/pull/184#issuecomment-458377539
 
-```
-enum GPUObjectStatus {
-    // The object is valid.
-    "valid",
-    // The object is invalid due to a non-fatal allocation failure.
-    // The application can use this as a signal to scale back resource usage, if possible.
-    "out-of-memory",
-    // The object is invalid for another, unrecoverable reason.
-    "invalid",
-};
-```
+Recoverable fallible allocations are exposed as Promise versions of the `createBuffer`/`createTexture` entry points.
 
-(Note that object creation failures always send an error to the error log, regardless of the object type or the type of failure.)
-
-If an application uses recoverable allocation, the implementation will still generate error log entries:
-a `"recoverable-out-of-memory"` error for the object creation, and `"validation-error"`s for any subsequent uses of the invalid object.
-The application may need to understand whether such error log entries were part of a recovered allocation (e.g. to avoid sending telemetry for those errors).
-To facilitate this filtering, the handle to the invalid object (including "expando" JavaScript properties) is attached to the error log entry (see above).
-
-### Recoverable errors in object creation
-
-A recoverable error is exposed as a `GPUObjectStatusQuery`.
-
-```
-// (Exact form/type subject to change.)
-typedef Promise<GPUObjectStatus> GPUObjectStatusQuery;
-
-typedef (GPUBuffer or GPUTexture) StatusableObject;
-
+```webidl
 partial interface GPUDevice {
-    GPUObjectStatusQuery getObjectStatus(StatusableObject object);
+    Promise<GPUBuffer> tryCreateBuffer(GPUBufferDescriptor descriptor);
+    Promise<GPUTexture> tryCreateTexture(GPUTextureDescriptor descriptor);
 };
 ```
 
-A concrete example: When creating a buffer, the following logic applies:
+If an application wants to allocate with fatal out-of-memory, it uses createBuffer/createTexture.
+Just like with any the creation of smaller objects, an out-of-memory condition will be treated as a fatal error: the device is lost.
 
- - `createBuffer` returns a `GPUBuffer` object `buffer` immediately.
- - A `GPUObjectStatusQuery` can be obtained by calling `device.getObjectStatus(buffer)`.
-   At a later time, that query resolves to a `GPUObjectStatus` that is one of:
-    - Creation succeeded (`"valid"`).
-    - Creation encountered a recoverable error (`"out-of-memory"`).
-      (The application can then choose to retry a smaller allocation of a *new* `GPUBuffer`.)
-    - Creation encountered another type of error out of the control of the application (`"invalid"`).
-
-Regardless of any recovery efforts the application makes, if creation fails,
-the resulting object is invalid (and subject to error propagation).
-
-Checking the status of a `GPUBuffer` or `GPUTexture` is **not** required.
-It is only necessary if an application wishes to recover from recoverable errors such as out of memory.
-(If it does, it is responsible for avoiding using the invalid object.)
+The `tryCreate*` entry points return Promises.
+ - If creation succeeds, the Promise resolves to a *valid* object.
+ - If there is a validation error, the Promise resolves to an *invalid* object (and produces a log entry).
+ - If the device is lost, the Promise resolves to an *invalid* object.
+ - If the resource allocation runs out of memory, the Promise rejects.
+    - (The application can assume that rejection *always* means it should recover.)
 
 ## Open Questions and Considerations
 
@@ -153,7 +121,14 @@ It is only necessary if an application wishes to recover from recoverable errors
    - <mesh3.indexBuffer> is invalid because it got an unsupported usage flag (0x89)
    ```
 
- - The exact shape of `GPUObjectStatusQuery` (currently `Promise<GPUObjectStatus>`) may piggy-back on the decision taken for `GPUFence`.
+ - Should applications be able to intentionally create graphs of potentially-invalid objects, and recover from this late?
+   E.g. create a large buffer, create a bind group from that, create a command buffer from that, then choose whether to submit based on whether the buffer was successfully allocated.
+    - If yes, `tryCreateBuffer` must return `GPUBuffer` and error log entries must not be generated when creating objects from invalid objects.
+      (Only log errors on queue.submit and other device/queue level operations.)
+    - If no, `tryCreateBuffer` should return `Promise<GPUBuffer>` and error log entries should be generated when creating objects from invalid objects.
+
+ - How do applications handle the case where they've allocated a lot of optional memory, but want to make another required allocation (which could fail due to OOM)?
+   How do they know when to free an optional allocation first?
 
 ## Resolved Questions
    
@@ -168,3 +143,10 @@ It is only necessary if an application wishes to recover from recoverable errors
  - Should an object creation error immediately log an error to the error log?
    Or should it only log if the error propagates to a device-level operation?
     - Tentatively resolved: errors should be logged immediately.
+
+ - Should applications be able to intentionally create graphs of potentially-invalid objects, and recover from this late?
+   E.g. create a large buffer, create a bind group from that, create a command buffer from that, then choose whether to submit based on whether the buffer was successfully allocated.
+    - If yes, `tryCreateBuffer` must return `GPUBuffer` and error log entries must not be generated when creating objects from invalid objects.
+      (Only log errors on queue.submit and other device/queue level operations.)
+    - If no, `tryCreateBuffer` should return `Promise<GPUBuffer>` and error log entries should be generated when creating objects from invalid objects.
+    - Resolved: no.

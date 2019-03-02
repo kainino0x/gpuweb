@@ -78,6 +78,7 @@ interface GPUBuffer {
     Promise<ArrayBuffer> mapReadAsync();
     Promise<ArrayBuffer> mapWriteAsync();
     void unmap();
+    void removeUsages(GPUBufferUsageFlags usage);
 
     void destroy();
 };
@@ -769,7 +770,6 @@ interface GPUDevice {
 
     GPUBuffer createBuffer(GPUBufferDescriptor descriptor);
     (GPUBuffer, ArrayBuffer) createBufferMapped(GPUBufferDescriptor descriptor);
-    Promise<(GPUBuffer, ArrayBuffer)> createBufferMappedAsync(GPUBufferDescriptor descriptor);
     GPUTexture createTexture(GPUTextureDescriptor descriptor);
     GPUSampler createSampler(GPUSamplerDescriptor descriptor);
 

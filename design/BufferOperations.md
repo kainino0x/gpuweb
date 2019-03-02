@@ -48,6 +48,17 @@ partial interface GPUBufferUsage {
 **TODO**: should `MAP_WRITE` be allowed only with read-only usages?
 It would allow clearing the buffer only on creation and not on every map.
 
+### Removing Map Usages
+
+A `MAP_*` usage may be *removed* from a buffer.
+Doing so prevents future mapping, but provides optimization opportunities to the implementation.
+
+```webidl
+partial interface GPUBuffer {
+    void removeUsages(GPUBufferUsageFlags usage);
+}
+```
+
 ### The `GPUBuffer` state machine
 
 Buffers have an internal state machine that has three states:
@@ -58,7 +69,7 @@ Buffers have an internal state machine that has three states:
 
 In the following a buffer's state is a shorthand for the buffer's state machine.
 Buffers created with `GPUDevice.createBuffer` start in the unmapped state.
-Buffers created with `GPUDevice.createBufferMapped` or `GPUDevice.createBufferMappedAsync` start in the mapped state.
+Buffers created with `GPUDevice.createBufferMapped` start in the mapped state.
 
 State transitions are the following:
 
@@ -118,12 +129,10 @@ A buffer can be created already mapped:
 ```webidl
 partial interface GPUDevice {
     (GPUBuffer, ArrayBuffer) createBufferMapped(GPUBufferDescriptor descriptor);
-    Promise<(GPUBuffer, ArrayBuffer)> createBufferMappedAsync(GPUBufferDescriptor descriptor);
 };
 ```
 
 `GPUDevice.createBufferMapped` returns a buffer in the mapped state along with an write mapping representing the whole range of the buffer.
-`GPUDevice.createBufferMappedAsync` returns the same values as a promise and provides more opportunities for optimization in implementations of the API.
 
 The mapping starts filled with zeros.
 

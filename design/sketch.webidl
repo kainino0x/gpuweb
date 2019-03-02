@@ -65,6 +65,7 @@ interface GPUBufferUsage {
     const u32 VERTEX = 32;
     const u32 UNIFORM = 64;
     const u32 STORAGE = 128;
+    const u32 MAP_WRITE_STAGED = 256;
 };
 
 dictionary GPUBufferDescriptor {

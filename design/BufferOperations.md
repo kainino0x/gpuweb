@@ -59,6 +59,20 @@ partial interface GPUBuffer {
 }
 ```
 
+### `MAP_WRITE_STAGED`
+
+The `MAP_WRITE_STAGED` buffer creation usage flag behaves like `MAP_WRITE` except that it may allocate and persistently hold an additional staging allocation specifically for mapping.
+This staging allocation is transparent to the application.
+
+```webidl
+partial interface GPUBufferUsage {
+    const u32 MAP_WRITE_STAGED = 256;
+}
+```
+
+The staging allocation may be freed by removing the `MAP_WRITE_STAGED` usage from the buffer.
+(If there is no staging allocation, it has no effect.)
+
 ### The `GPUBuffer` state machine
 
 Buffers have an internal state machine that has three states:

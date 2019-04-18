@@ -736,22 +736,27 @@ Canvas Rendering and Swap Chain {#swapchain}
 ============================================
 
 <script type=idl>
-interface GPUCanvasContext {
-    // Calling configureSwapChain a second time invalidates the previous one,
-    // and all of the textures it’s produced.
-    GPUSwapChain configureSwapChain(GPUSwapChainDescriptor descriptor);
-
-    Promise<GPUTextureFormat> getSwapChainPreferredFormat(GPUDevice device);
-}
-
 dictionary GPUSwapChainDescriptor {
-    required GPUDevice device;
     required GPUTextureFormat format;
     GPUTextureUsageFlags usage = GPUTextureUsage.OUTPUT_ATTACHMENT;
 };
 
+interface GPUSwapChainTexture : GPUTexture {
+    // Transfers the swapchain texture to an ImageBitmap.
+    // This GPUTexture becomes invalid.
+    // To display the ImageBitmap, use ImageBitmapRenderingContext.
+    ImageBitmap transferToImageBitmap();
+};
+
 interface GPUSwapChain {
-    GPUTexture getCurrentTexture();
+    // Returns a new GPUTexture every time.
+    // There may be only 2 GPUSwapChainTextures and 1 ImageBitmap active
+    // at once.
+    // If there is more than 1 previously-returned GPUSwapChainTexture
+    // still active (not yet transferred), throws an exception.
+    // If there is any previously-returned ImageBitmap still active
+    // (not yet detached), it is detached.
+    GPUSwapChainTexture getNextTexture();
 };
 </script>
 
@@ -790,6 +795,11 @@ interface GPUDevice {
     GPUCommandEncoder createCommandEncoder(GPUCommandEncoderDescriptor descriptor);
 
     GPUQueue getQueue();
+
+    // Calling configureSwapChain a second time invalidates the previous one,
+    // and all of the textures it’s produced.
+    GPUSwapChain configureSwapChain(GPUSwapChainDescriptor descriptor);
+    Promise<GPUTextureFormat> getSwapChainPreferredFormat(GPUDevice device);
 };
 
 dictionary GPUDeviceDescriptor {

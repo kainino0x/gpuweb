@@ -39,8 +39,7 @@ Buffers have an internal state machine that has three states:
  - **Destroyed**: after a call to `GPUBuffer.destroy` where it is a validation error to do anything with the buffer.
 
 In the following a buffer's state is a shorthand for the buffer's state machine.
-Buffers created with `GPUDevice.createBuffer` start in the unmapped state.
-Buffers created with `GPUDevice.createBufferMapped` or `GPUDevice.createBufferMappedAsync` start in the mapped state.
+Buffers created with `GPUDevice.createBuffer` or `GPUPendingBuffer.finish` start in the unmapped state.
 
 State transitions are the following:
 
@@ -98,14 +97,22 @@ What happens with the content of mappings depends of which function was used to 
 A buffer can be created already mapped:
 
 ```webidl
+interface GPUPendingBuffer {
+    readonly attribute ArrayBuffer buffer;
+    GPUBuffer finish();
+};
+
 partial interface GPUDevice {
-    (GPUBuffer, ArrayBuffer) createBufferMapped(GPUBufferDescriptor descriptor);
-    Promise<(GPUBuffer, ArrayBuffer)> createBufferMappedAsync(GPUBufferDescriptor descriptor);
+    GPUPendingBuffer createBufferWithData(GPUBufferDescriptor descriptor);
+    Promise<GPUPendingBuffer> createBufferWithDataAsync(GPUBufferDescriptor descriptor);
 };
 ```
 
-`GPUDevice.createBufferMapped` returns a buffer in the mapped state along with an write mapping representing the whole range of the buffer.
-`GPUDevice.createBufferMappedAsync` returns the same values as a promise and provides more opportunities for optimization in implementations of the API.
+`GPUDevice.createBufferWithData` returns a buffer in the mapped state along with a write mapping representing the whole range of the buffer.
+`GPUDevice.createBufferWithDataAsync` returns the same values as a promise and provides more opportunities for optimization in implementations of the API.
+
+These entry points do not require the `MAP_WRITE` usage to be specified.
+The `MAP_WRITE` usage may be specified if the buffer needs to be re-mappable later on.
 
 The mapping starts filled with zeros.
 
@@ -154,12 +161,12 @@ stagingVertexBuffer.mapWriteAsync().then((stagingData) => {
 ```
 function bufferSubData(device, destBuffer, destOffset, srcArrayBuffer) {
     const byteCount = srcArrayBuffer.byteLength;
-    const (srcBuffer, mapping) = device.createBufferMapped({
+    const srcPending = device.createBufferWithData({
         size: byteCount,
-        usage: GPUBufferUsage.MAP_WRITE | GPUBufferUsage.TRANSFER_SRC,
+        usage: GPUBufferUsage.TRANSFER_SRC,
     });
-    (new Uint8Array(mapping)).set(new Uint8Array(srcArrayBuffer)); // memcpy
-    srcBuffer.unmap();
+    (new Uint8Array(srcPending.buffer)).set(new Uint8Array(srcArrayBuffer)); // memcpy
+    const srcBuffer = srcPending.finish();
 
     const enc = device.createCommandEncoder({});
     enc.copyBufferToBuffer(srcBuffer, 0, destBuffer, destOffset, byteCount);
@@ -183,23 +190,22 @@ function AutoRingBuffer(device, chunkSize) {
 
     function Chunk() {
         const size = chunkSize;
-        const (buf, initialMap) = this.device.createBufferMapped({
+        let bufPending = this.device.createBufferWithData({
             size: size,
             usage: GPUBufferUsage.MAP_WRITE | GPUBufferUsage.TRANSFER_SRC,
         });
 
         let mapTyped;
         let pos;
-        let enc;
+        const copies = [];
         this.reset = function(mappedArrayBuffer) {
             mapTyped = new Uint8Array(mappedArrayBuffer);
             pos = 0;
-            enc = device.createCommandEncoder({});
             if (size == chunkSize) {
                 availChunks.push(this);
             }
         };
-        this.reset(initialMap);
+        this.reset(bufPending.buffer);
 
         this.push = function(destBuffer, destOffset, srcArrayBuffer) {
             const byteCount = srcArrayBuffer.byteLength;
@@ -207,15 +213,28 @@ function AutoRingBuffer(device, chunkSize) {
             if (end > size)
                 return false;
             mapTyped.set(new Uint8Array(srcArrayBuffer), pos);
-            enc.copyBufferToBuffer(buf, pos, destBuffer, destOffset, byteCount);
+            copies.push([pos, destBuffer, destOffset, byteCount]);
             pos = end;
             return true;
         };
 
         this.flush = async function() {
-            const cb = enc.finish();
-            queue.submit([cb]);
+            const buf = bufPending.finish();
+            const enc = device.createCommandEncoder({});
+            for (const copyArgs : copies) {
+                enc.copyBufferToBuffer(buf, ... copyArgs);
+            }
+            queue.submit([enc.finish()]);
+
             const newMap = await buf.mapWriteAsync();
+
+            bufPending = {
+                buffer: buf,
+                finish() {
+                    this.buffer.unmap();
+                    return this.buffer;
+                },
+            };
             this.reset(newMap);
         };
 

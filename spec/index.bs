@@ -42,8 +42,6 @@ dictionary GPUExtent3D {
     required u32 depth;
 };
 
-typedef sequence<any> GPUMappedBuffer;  // [GPUBuffer, ArrayBuffer]
-
 interface GPUObjectBase {
     attribute DOMString? label;
 };
@@ -788,6 +786,11 @@ dictionary GPULimits {
     u32 maxBindGroups = 4;
 };
 
+interface GPUPendingBuffer {
+    readonly attribute ArrayBuffer buffer;
+    GPUBuffer finish();
+};
+
 // Device
 interface GPUDevice : GPUObjectBase {
     readonly attribute GPUExtensions extensions;
@@ -795,8 +798,8 @@ interface GPUDevice : GPUObjectBase {
     readonly attribute GPUAdapter adapter;
 
     GPUBuffer createBuffer(GPUBufferDescriptor descriptor);
-    GPUMappedBuffer createBufferMapped(GPUBufferDescriptor descriptor);
-    Promise<GPUMappedBuffer> createBufferMappedAsync(GPUBufferDescriptor descriptor);
+    GPUPendingBuffer createBufferWithData(GPUBufferDescriptor descriptor);
+    Promise<GPUPendingBuffer> createBufferWithDataAsync(GPUBufferDescriptor descriptor);
     GPUTexture createTexture(GPUTextureDescriptor descriptor);
     GPUSampler createSampler(GPUSamplerDescriptor descriptor);
 

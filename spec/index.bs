@@ -373,13 +373,15 @@ enum GPUCullMode {
     "back"
 };
 
-dictionary GPURasterizationStateDescriptor {
-    required GPUFrontFace frontFace;
-    GPUCullMode cullMode = "none";
-
+dictionary GPURasterizationStateDescriptorBase {
     i32 depthBias = 0;
     float depthBiasSlopeScale = 0;
     float depthBiasClamp = 0;
+};
+
+dictionary GPUTriangleRasterizationStateDescriptor : GPURasterizationStateDescriptorBase {
+    required GPUFrontFace frontFace;
+    GPUCullMode cullMode = "none";
 };
 
 // BlendState
@@ -584,7 +586,10 @@ dictionary GPURenderPipelineDescriptor : GPUPipelineDescriptorBase {
     GPUPipelineStageDescriptor? fragmentStage = null;
 
     required GPUPrimitiveTopology primitiveTopology;
-    required GPURasterizationStateDescriptor rasterizationState;
+    // If primitiveTopology is "triangle-list" or "triangle-strip", this is
+    // treated as GPUTriangleRasterizationStateDescriptor; otherwise, it is
+    // treated as GPURasterizationStateDescriptorBase.
+    required (GPURasterizationStateDescriptorBase or GPUTriangleRasterizationStateDescriptor) rasterizationState;
     required sequence<GPUColorStateDescriptor> colorStates;
     GPUDepthStencilStateDescriptor? depthStencilState = null;
     required GPUVertexInputDescriptor vertexInput;

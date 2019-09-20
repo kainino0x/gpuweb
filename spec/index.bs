@@ -108,6 +108,30 @@ interface mixin GPUObjectBase {
         An internal slot holding the [=device=] on which the object exists.
 </dl>
 
+## WebGPU Object Handles ## {#webgpu-object-handles}
+
+Some [=internal objects=] can be represented by a {{GPUHandle}}.
+A {{GPUHandle}} is a number that, in conjunction with the [=device=] and the object's type,
+uniquely represents the [=internal object=].
+
+A {{GPUHandle}} can be used to create a new [=WebGPU interface=] pointing at an [=internal
+object=].
+This allows *synchronous* transfer of objects between different [=agents=], as long as they
+already have the necessary [=device=].
+This is done using the `import*` methods of {{GPUDevice}}.
+
+Note:
+Since {{GPUHandle|GPUHandles}} are just numbers, they can be moved between agents in any way.
+Generally, they'll be sent either as part of a `postMessage` call, or via a `SharedArrayBuffer`.
+
+<script type=idl>
+typedef unsigned long GPUHandle;
+
+interface mixin GPUHandleableBase {
+    readonly attribute GPUHandle handle;
+};
+</script>
+
 ## Object Descriptors ## {#object-descriptors}
 
 <script type=idl>
@@ -323,6 +347,11 @@ interface GPUDevice : EventTarget {
 
     GPUCommandEncoder createCommandEncoder(optional GPUCommandEncoderDescriptor descriptor);
     GPURenderBundleEncoder createRenderBundleEncoder(GPURenderBundleEncoderDescriptor descriptor);
+
+    GPUBindGroupLayout importBindGroupLayout(GPUHandle handle);
+    GPUShaderModule importShaderModule(GPUHandle handle);
+    GPUComputePipeline importComputePipeline(GPUHandle handle);
+    GPURenderPipeline importRenderPipeline(GPUHandle handle);
 
     GPUQueue getQueue();
 };
@@ -791,9 +820,9 @@ Resource Binding {#binding}
 A {{GPUBindGroupLayout}} defines the interface between a set of resources bound in a {{GPUBindGroup}} and their accessibility in shader stages.
 
 <script type=idl>
-[Serializable]
 interface GPUBindGroupLayout : GPUObjectBase {
 };
+GPUBindGroupLayout includes GPUHandleableBase;
 </script>
 
 ### Creation ### {#bind-group-layout-creation}
@@ -992,14 +1021,14 @@ Shader Modules {#shader-modules}
 ## GPUShaderModule ## {#shader-module}
 
 <script type=idl>
-[Serializable]
 interface GPUShaderModule : GPUObjectBase {
 };
+GPUShaderModule includes GPUHandleableBase;
 </script>
 
-{{GPUShaderModule}} is {{Serializable}}. It is a reference to an internal
-shader module object, and {{Serializable}} means that the reference can be
-*copied* between realms (threads/workers), allowing multiple realms to access
+{{GPUShaderModule}} is a {{GPUHandleableBase}}. It is a reference to an internal
+shader module object, and {{GPUHandleableBase}} means that the reference can be
+*copied* between agents (threads/workers), allowing multiple agents to access
 it concurrently. Since {{GPUShaderModule}} immutable, there are no race
 conditions.
 
@@ -1037,9 +1066,9 @@ dictionary GPUProgrammableStageDescriptor {
 ## GPUComputePipeline ## {#compute-pipeline}
 
 <script type=idl>
-[Serializable]
 interface GPUComputePipeline : GPUObjectBase {
 };
+GPUComputePipeline includes GPUHandleableBase;
 </script>
 
 ### Creation ### {#compute-pipeline-creation}
@@ -1053,9 +1082,9 @@ dictionary GPUComputePipelineDescriptor : GPUPipelineDescriptorBase {
 ## GPURenderPipeline ## {#render-pipeline}
 
 <script type=idl>
-[Serializable]
 interface GPURenderPipeline : GPUObjectBase {
 };
+GPURenderPipeline includes GPUHandleableBase;
 </script>
 
 ### Creation ### {#render-pipeline-creation}

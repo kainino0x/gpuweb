@@ -311,6 +311,7 @@ interface GPUDevice : EventTarget {
     GPUMappedBuffer createBufferMapped(GPUBufferDescriptor descriptor);
     Promise<GPUMappedBuffer> createBufferMappedAsync(GPUBufferDescriptor descriptor);
     GPUTexture createTexture(GPUTextureDescriptor descriptor);
+    GPUSurface createSurface(GPUSurfaceDescriptor surface);
     GPUSampler createSampler(optional GPUSamplerDescriptor descriptor);
 
     GPUBindGroupLayout createBindGroupLayout(GPUBindGroupLayoutDescriptor descriptor);
@@ -1629,34 +1630,79 @@ dictionary GPUFenceDescriptor : GPUObjectDescriptorBase {
 </script>
 
 
-Canvas Rendering and Swap Chain {#swapchain}
-============================================
+Canvas Rendering {#canvas-rendering}
+====================================
 
+To use a canvas with WebGPU, use
+{{HTMLCanvasElement/getContext()|HTMLCanvasElement.getContext()}} or
+{{OffscreenCanvas/getContext()|OffscreenCanvas.getContext()}}
+to get a context of type `gpupresent`.
+This returns an object of type {{GPUPresentContext}}.
+
+Note:
+A {{GPUPresentContext}} is *not* tied to a specific [=device=].
+It can be used by any device at any time.
+For example, if a device is lost and a new one is created, it can
+continue rendering to the same {{GPUPresentContext}}.
+
+In order to render an image to the canvas, create a {{GPUSurface}}, and fill it
+by using it as a {{GPUTexture}}. Then, {{GPUPresentContext/present()}} it to the
+canvas.
+
+## GPUPresentContext ## {#gpu-present-context}
+
+<!-- TODO: use Exposed on canvas to restrict its type on Workers, like in WebGL -->
 <script type=idl>
-interface GPUCanvasContext {
-    GPUSwapChain configureSwapChain(GPUSwapChainDescriptor descriptor);
+interface GPUPresentContext {
+    readonly attribute (HTMLCanvasElement or OffscreenCanvas) canvas;
 
-    Promise<GPUTextureFormat> getSwapChainPreferredFormat(GPUDevice device);
+    Promise<GPUTextureFormat> getPreferredFormat(GPUDevice device);
+    void present(GPUSurface surface);
 };
 </script>
 
-  * {{GPUCanvasContext/configureSwapChain()}}:
-    Configures the swap chain for this canvas, and returns a new
-    {{GPUSwapChain}} object representing it. Destroys any swapchain
-    previously returned by `configureSwapChain`, including all of the
-    textures it has produced.
+{{GPUPresentContext}} has the following methods:
+
+<dl dfn-type=method dfn-for=GPUPresentContext>
+    : <dfn>present(surface)</dfn>
+    ::
+        <div algorithm="GPUPresentContext.present(surface)">
+            Presents |surface| to the canvas associated with the {{GPUPresentContext}} |this|.
+
+            1.  If |surface| was not created with
+                {{GPUSurfaceDescriptor/context|descriptor.context}} equal to
+                |this|.{{GPUPresentContext/canvas}}, throw an {{OperationError}}.
+            1.  If the dimensions of |surface| don't match |this|.{{GPUPresentContext/canvas}},
+                throw an {{OperationError}}.
+            1.  Makes |surface| [=invalid=].
+            1.  Presents the contents of |surface| to |this|.{{GPUPresentContext/canvas}}.
+        </div>
+
+    : <dfn>getPreferredFormat(device)</dfn>
+    ::
+        Returns the preferred format for a surface being presented to this {{GPUPresentContext}}
+        with the given {{GPUDevice}}.
+</dl>
+
+## GPUSurface ## {#gpu-surface}
+
+A {{GPUSurface}} is a {{GPUTexture}} which is created specifically for presentation
+to a particular canvas via {{GPUPresentContext}}.
+
+It becomes invalid when it has been presented, as if it were {{GPUTexture/destroy()|destroyed}}.
 
 <script type=idl>
-dictionary GPUSwapChainDescriptor : GPUObjectDescriptorBase {
-    required GPUDevice device;
+interface GPUSurface : GPUTexture {
+};
+</script>
+
+A {{GPUSurface}} is created using {{GPUDevice/createSurface()|GPUDevice.createSurface(descriptor)}}.
+
+<script type=idl>
+dictionary GPUSurfaceDescriptor : GPUObjectDescriptorBase {
+    required GPUPresentContext context;
     required GPUTextureFormat format;
     GPUTextureUsageFlags usage = 0x10;  // GPUTextureUsage.OUTPUT_ATTACHMENT
-};
-</script>
-
-<script type=idl>
-interface GPUSwapChain : GPUObjectBase {
-    GPUTexture getCurrentTexture();
 };
 </script>
 

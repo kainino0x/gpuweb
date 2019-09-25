@@ -1635,7 +1635,7 @@ Canvas Rendering and Swap Chain {#swapchain}
 <script type=idl>
 interface GPUCanvasContext {
     GPUSurface createSurface(GPUSurfaceDescriptor descriptor);
-    void present(GPUSurface surface);
+    GPUSurfaceDesynchronized createSurfaceDesynchronized(GPUSurfaceDescriptor descriptor);
 
     Promise<GPUTextureFormat> getSwapChainPreferredFormat(GPUDevice device);
 };
@@ -1651,6 +1651,10 @@ dictionary GPUSurfaceDescriptor : GPUObjectDescriptorBase {
 
 <script type=idl>
 interface GPUSurface : GPUTexture {
+    void present();
+};
+
+interface GPUSurfaceDesynchronized : GPUTexture {
 };
 </script>
 

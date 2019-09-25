@@ -1633,8 +1633,8 @@ Canvas Rendering and Swap Chain {#swapchain}
 ============================================
 
 <script type=idl>
-interface GPUCanvasContext {
-    void present(GPUSurface surface);
+partial interface ImageBitmapRenderingContext {
+    void transferFromGPUSurface(GPUSurface surface);
 };
 </script>
 

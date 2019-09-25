@@ -1634,20 +1634,15 @@ Canvas Rendering and Swap Chain {#swapchain}
 
 <script type=idl>
 interface GPUCanvasContext {
-    GPUSwapChain configureSwapChain(GPUSwapChainDescriptor descriptor);
+    GPUSurface createSurface(GPUSurfaceDescriptor descriptor);
+    void present(GPUSurface surface);
 
     Promise<GPUTextureFormat> getSwapChainPreferredFormat(GPUDevice device);
 };
 </script>
 
-  * {{GPUCanvasContext/configureSwapChain()}}:
-    Configures the swap chain for this canvas, and returns a new
-    {{GPUSwapChain}} object representing it. Destroys any swapchain
-    previously returned by `configureSwapChain`, including all of the
-    textures it has produced.
-
 <script type=idl>
-dictionary GPUSwapChainDescriptor : GPUObjectDescriptorBase {
+dictionary GPUSurfaceDescriptor : GPUObjectDescriptorBase {
     required GPUDevice device;
     required GPUTextureFormat format;
     GPUTextureUsageFlags usage = 0x10;  // GPUTextureUsage.OUTPUT_ATTACHMENT
@@ -1655,11 +1650,6 @@ dictionary GPUSwapChainDescriptor : GPUObjectDescriptorBase {
 </script>
 
 <script type=idl>
-interface GPUSwapChain : GPUObjectBase {
-    GPUSurface getNextSurface();
-    void present(GPUSurface surface);
-};
-
 interface GPUSurface : GPUTexture {
 };
 </script>

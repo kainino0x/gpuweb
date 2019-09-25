@@ -1637,6 +1637,8 @@ interface GPUCanvasContext {
     GPUSurface createSurface(GPUSurfaceDescriptor descriptor);
     void present(GPUSurface surface);
 
+    GPUSurface getDesynchronizedSurface(GPUSurfaceDescriptor descriptor);
+
     Promise<GPUTextureFormat> getSwapChainPreferredFormat(GPUDevice device);
 };
 </script>

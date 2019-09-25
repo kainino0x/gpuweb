@@ -1656,7 +1656,11 @@ dictionary GPUSwapChainDescriptor : GPUObjectDescriptorBase {
 
 <script type=idl>
 interface GPUSwapChain : GPUObjectBase {
-    GPUTexture getCurrentTexture();
+    GPUSurface getNextSurface();
+    void present(GPUSurface surface);
+};
+
+interface GPUSurface : GPUTexture {
 };
 </script>
 

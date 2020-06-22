@@ -1222,7 +1222,7 @@ Possible extra rowspan handling
 	}
 </style>
   <meta content="Bikeshed version b43aa594f5014ff14748da1aace9afaa73d2b3e6" name="generator">
-  <meta content="c5f638e32bd59a22bffe210b94f3b2d56927007c" name="document-revision">
+  <meta content="db583c380efbdcfa1d7fdb567716568645d73eb3" name="document-revision">
 <style>
 /* Make <dl> blocks more distinct from their surroundings. */
 dl {
@@ -1551,7 +1551,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
   <div class="head">
    <p data-fill-with="logo"></p>
    <h1 class="p-name no-ref" id="title">WebGPU</h1>
-   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Editor’s Draft, <time class="dt-updated" datetime="2020-06-18">18 June 2020</time></span></h2>
+   <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Editor’s Draft, <time class="dt-updated" datetime="2020-06-22">22 June 2020</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>Issue Tracking:
@@ -2396,7 +2396,7 @@ Possibly also include a simple example with no handling.</p>
    <p><dfn class="dfn-paneled idl-code" data-dfn-type="interface" data-export id="gpu"><code>GPU</code></dfn> is the entry point to WebGPU.</p>
 <pre class="idl highlight def">[<a class="idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed" id="ref-for-Exposed②"><c- g>Exposed</c-></a>=(<c- n>Window</c->, <c- n>DedicatedWorker</c->)]
 <c- b>interface</c-> <a class="idl-code" data-link-type="interface" href="#gpu" id="ref-for-gpu③"><c- g>GPU</c-></a> {
-    <c- b>Promise</c->&lt;<a class="n" data-link-type="idl-name" href="#gpuadapter" id="ref-for-gpuadapter④"><c- n>GPUAdapter</c-></a>> <a class="idl-code" data-link-type="method" href="#dom-gpu-requestadapter" id="ref-for-dom-gpu-requestadapter①"><c- g>requestAdapter</c-></a>(<c- b>optional</c-> <a class="n" data-link-type="idl-name" href="#dictdef-gpurequestadapteroptions" id="ref-for-dictdef-gpurequestadapteroptions"><c- n>GPURequestAdapterOptions</c-></a> <dfn class="idl-code" data-dfn-for="GPU/requestAdapter(options), GPU/requestAdapter()" data-dfn-type="argument" data-export id="dom-gpu-requestadapter-options-options"><code><c- g>options</c-></code><a class="self-link" href="#dom-gpu-requestadapter-options-options"></a></dfn> = {});
+    <c- b>Promise</c->&lt;<a class="n" data-link-type="idl-name" href="#gpuadapter" id="ref-for-gpuadapter④"><c- n>GPUAdapter</c-></a>?> <a class="idl-code" data-link-type="method" href="#dom-gpu-requestadapter" id="ref-for-dom-gpu-requestadapter①"><c- g>requestAdapter</c-></a>(<c- b>optional</c-> <a class="n" data-link-type="idl-name" href="#dictdef-gpurequestadapteroptions" id="ref-for-dictdef-gpurequestadapteroptions"><c- n>GPURequestAdapterOptions</c-></a> <dfn class="idl-code" data-dfn-for="GPU/requestAdapter(options), GPU/requestAdapter()" data-dfn-type="argument" data-export id="dom-gpu-requestadapter-options-options"><code><c- g>options</c-></code><a class="self-link" href="#dom-gpu-requestadapter-options-options"></a></dfn> = {});
 };
 </pre>
    <p><code class="idl"><a data-link-type="idl" href="#gpu" id="ref-for-gpu④">GPU</a></code> has the methods defined by the following sections.</p>
@@ -2407,7 +2407,7 @@ Possibly also include a simple example with no handling.</p>
      <li data-md>
       <p>optional <code class="idl"><a data-link-type="idl" href="#dictdef-gpurequestadapteroptions" id="ref-for-dictdef-gpurequestadapteroptions①">GPURequestAdapterOptions</a></code> <var>options</var> = {}</p>
     </ul>
-    <p><strong>Returns:</strong> <var>promise</var>, of type Promise&lt;<code class="idl"><a data-link-type="idl" href="#gpuadapter" id="ref-for-gpuadapter⑤">GPUAdapter</a></code>>.</p>
+    <p><strong>Returns:</strong> <var>promise</var>, of type Promise&lt;<code class="idl"><a data-link-type="idl" href="#gpuadapter" id="ref-for-gpuadapter⑤">GPUAdapter</a></code>?>.</p>
     <p>Requests an <a data-link-type="dfn" href="#adapter" id="ref-for-adapter①②">adapter</a> from the user agent.
     The user agent chooses whether to return an adapter, and, if so,
     chooses according to the provided <var>options</var>.</p>
@@ -2423,7 +2423,7 @@ Possibly also include a simple example with no handling.</p>
         <p><var>promise</var> <a data-link-type="dfn" href="https://heycam.github.io/webidl/#resolve" id="ref-for-resolve①">resolves</a> with a new <code class="idl"><a data-link-type="idl" href="#gpuadapter" id="ref-for-gpuadapter⑥">GPUAdapter</a></code> encapsulating <var>adapter</var>.</p>
       </ul>
      <li data-md>
-      <p>Otherwise, <var>promise</var> <a data-link-type="dfn" href="https://heycam.github.io/webidl/#reject" id="ref-for-reject">rejects</a> with an <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#operationerror" id="ref-for-operationerror">OperationError</a></code>.</p>
+      <p>Otherwise, <var>promise</var> <a data-link-type="dfn" href="https://heycam.github.io/webidl/#resolve" id="ref-for-resolve②">resolves</a> with <code>null</code>.</p>
     </ul>
    </div>
    <h5 class="heading settled" data-level="4.3.1.1" id="adapter-selection"><span class="secno">4.3.1.1. </span><span class="content">Adapter Selection</span><a class="self-link" href="#adapter-selection"></a></h5>
@@ -2485,7 +2485,7 @@ and describes its capabilities (extensions and limits).</p>
     <c- b>readonly</c-> <c- b>attribute</c-> <c- b>FrozenArray</c->&lt;<a class="n" data-link-type="idl-name" href="#enumdef-gpuextensionname" id="ref-for-enumdef-gpuextensionname②"><c- n>GPUExtensionName</c-></a>> <a class="idl-code" data-link-type="attribute" data-readonly data-type="FrozenArray<GPUExtensionName>" href="#dom-gpuadapter-extensions" id="ref-for-dom-gpuadapter-extensions"><c- g>extensions</c-></a>;
     //readonly attribute GPULimits limits; Don’t expose higher limits for now.
 
-    <c- b>Promise</c->&lt;<a class="n" data-link-type="idl-name" href="#gpudevice" id="ref-for-gpudevice⑤"><c- n>GPUDevice</c-></a>> <a class="idl-code" data-link-type="method" href="#dom-gpuadapter-requestdevice" id="ref-for-dom-gpuadapter-requestdevice"><c- g>requestDevice</c-></a>(<c- b>optional</c-> <a class="n" data-link-type="idl-name" href="#dictdef-gpudevicedescriptor" id="ref-for-dictdef-gpudevicedescriptor①"><c- n>GPUDeviceDescriptor</c-></a> <dfn class="idl-code" data-dfn-for="GPUAdapter/requestDevice(descriptor), GPUAdapter/requestDevice()" data-dfn-type="argument" data-export id="dom-gpuadapter-requestdevice-descriptor-descriptor"><code><c- g>descriptor</c-></code><a class="self-link" href="#dom-gpuadapter-requestdevice-descriptor-descriptor"></a></dfn> = {});
+    <c- b>Promise</c->&lt;<a class="n" data-link-type="idl-name" href="#gpudevice" id="ref-for-gpudevice⑤"><c- n>GPUDevice</c-></a>?> <a class="idl-code" data-link-type="method" href="#dom-gpuadapter-requestdevice" id="ref-for-dom-gpuadapter-requestdevice"><c- g>requestDevice</c-></a>(<c- b>optional</c-> <a class="n" data-link-type="idl-name" href="#dictdef-gpudevicedescriptor" id="ref-for-dictdef-gpudevicedescriptor①"><c- n>GPUDeviceDescriptor</c-></a> <a class="idl-code" data-link-type="argument" href="#dom-gpuadapter-requestdevice-descriptor-descriptor" id="ref-for-dom-gpuadapter-requestdevice-descriptor-descriptor"><c- g>descriptor</c-></a> = {});
 };
 </pre>
    <p><code class="idl"><a data-link-type="idl" href="#gpuadapter" id="ref-for-gpuadapter①⓪">GPUAdapter</a></code> has the following attributes:</p>
@@ -2514,9 +2514,9 @@ The contents are implementation-defined.</p>
       <p><strong>Arguments:</strong></p>
       <ul>
        <li data-md>
-        <p>optional <code class="idl"><a data-link-type="idl" href="#dictdef-gpudevicedescriptor" id="ref-for-dictdef-gpudevicedescriptor②">GPUDeviceDescriptor</a></code> <var>descriptor</var> = {}</p>
+        <p><var>descriptor</var>: optional <code class="idl"><a data-link-type="idl" href="#dictdef-gpudevicedescriptor" id="ref-for-dictdef-gpudevicedescriptor②">GPUDeviceDescriptor</a></code> <dfn class="dfn-paneled idl-code" data-dfn-for="GPUAdapter/requestDevice(descriptor)" data-dfn-type="argument" data-export id="dom-gpuadapter-requestdevice-descriptor-descriptor"><code>descriptor</code></dfn> = {}</p>
       </ul>
-      <p><strong>Returns:</strong> <var>promise</var>, of type Promise&lt;<code class="idl"><a data-link-type="idl" href="#gpudevice" id="ref-for-gpudevice⑥">GPUDevice</a></code>>.</p>
+      <p><strong>Returns:</strong> <var>promise</var>, of type Promise&lt;<code class="idl"><a data-link-type="idl" href="#gpudevice" id="ref-for-gpudevice⑥">GPUDevice</a></code>?>.</p>
       <ul>
        <li data-md>
         <p>Let <var>promise</var> be <a data-link-type="dfn" href="https://heycam.github.io/webidl/#a-new-promise" id="ref-for-a-new-promise①">a new promise</a>.</p>
@@ -2525,7 +2525,7 @@ The contents are implementation-defined.</p>
         <div class="device-timeline">
          <ul>
           <li data-md>
-           <p>If any of the following conditions are unsatisfied, <a data-link-type="dfn" href="https://heycam.github.io/webidl/#reject" id="ref-for-reject①">reject</a> <var>promise</var> with an <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#operationerror" id="ref-for-operationerror①">OperationError</a></code> and stop.</p>
+           <p>If any of the following conditions are unsatisfied, <a data-link-type="dfn" href="https://heycam.github.io/webidl/#reject" id="ref-for-reject">reject</a> <var>promise</var> with an <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#operationerror" id="ref-for-operationerror">OperationError</a></code> and stop.</p>
            <div class="validusage">
             <ul>
              <li data-md>
@@ -2537,7 +2537,9 @@ the value of that limit in <var>descriptor</var>.<code class="idl"><a data-link-
             <p>where <var>adapter</var> is <var>this</var>.<code class="idl"><a data-link-type="idl" href="#dom-gpuadapter-adapter-slot" id="ref-for-dom-gpuadapter-adapter-slot①">[[adapter]]</a></code>.</p>
            </div>
           <li data-md>
-           <p><a data-link-type="dfn" href="https://heycam.github.io/webidl/#resolve" id="ref-for-resolve②">Resolve</a> <var>promise</var> to a new <code class="idl"><a data-link-type="idl" href="#gpudevice" id="ref-for-gpudevice⑦">GPUDevice</a></code> object encapsulating <a data-link-type="dfn" href="#a-new-device" id="ref-for-a-new-device">a new device</a> with the capabilities described by <var>descriptor</var>.</p>
+           <p>If the user agent cannot fulfill the request, <a data-link-type="dfn" href="https://heycam.github.io/webidl/#resolve" id="ref-for-resolve③">resolve</a> <var>promise</var> to <code>null</code> and stop.</p>
+          <li data-md>
+           <p><a data-link-type="dfn" href="https://heycam.github.io/webidl/#resolve" id="ref-for-resolve④">Resolve</a> <var>promise</var> to a new <code class="idl"><a data-link-type="idl" href="#gpudevice" id="ref-for-gpudevice⑦">GPUDevice</a></code> object encapsulating <a data-link-type="dfn" href="#a-new-device" id="ref-for-a-new-device">a new device</a> with the capabilities described by <var>descriptor</var>.</p>
          </ul>
         </div>
        <li data-md>
@@ -3102,7 +3104,7 @@ work using it can be submitted to the <a data-link-type="dfn" href="#queue-timel
       <p>If this call doesn’t follow the <a data-link-type="abstract-op" href="#abstract-opdef-getmappedrange-valid-usage" id="ref-for-abstract-opdef-getmappedrange-valid-usage">getMappedRange Valid Usage</a>:</p>
       <ol>
        <li data-md>
-        <p>Throw an <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#operationerror" id="ref-for-operationerror②">OperationError</a></code>.</p>
+        <p>Throw an <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#operationerror" id="ref-for-operationerror①">OperationError</a></code>.</p>
       </ol>
      <li data-md>
       <p>Let <var>m</var> be a new <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-ArrayBuffer" id="ref-for-idl-ArrayBuffer①②">ArrayBuffer</a></code> of size <var>size</var> pointing at the content of <var>this</var>.<code class="idl"><a data-link-type="idl" href="#dom-gpubuffer-mapping-slot" id="ref-for-dom-gpubuffer-mapping-slot⑧">[[mapping]]</a></code> at offset <var>offset</var> - <var>this</var>.<code class="idl"><a data-link-type="idl" href="#dom-gpubuffer-mapping_range-slot" id="ref-for-dom-gpubuffer-mapping_range-slot⑤">[[mapping_range]]</a></code>[0].</p>
@@ -3149,7 +3151,7 @@ work using it can be submitted to the <a data-link-type="dfn" href="#queue-timel
       <p>If <var>this</var>.<code class="idl"><a data-link-type="idl" href="#dom-gpubuffer-state-slot" id="ref-for-dom-gpubuffer-state-slot⑨">[[state]]</a></code> is <a data-link-type="dfn" href="#buffer-state-mapping-pending" id="ref-for-buffer-state-mapping-pending③">mapping pending</a>:</p>
       <ol>
        <li data-md>
-        <p><a data-link-type="dfn" href="https://heycam.github.io/webidl/#reject" id="ref-for-reject②">Reject</a> <code class="idl"><a data-link-type="idl" href="#dom-gpubuffer-mapping-slot" id="ref-for-dom-gpubuffer-mapping-slot⑨">[[mapping]]</a></code> with an <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#operationerror" id="ref-for-operationerror③">OperationError</a></code>.</p>
+        <p><a data-link-type="dfn" href="https://heycam.github.io/webidl/#reject" id="ref-for-reject①">Reject</a> <code class="idl"><a data-link-type="idl" href="#dom-gpubuffer-mapping-slot" id="ref-for-dom-gpubuffer-mapping-slot⑨">[[mapping]]</a></code> with an <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#operationerror" id="ref-for-operationerror②">OperationError</a></code>.</p>
        <li data-md>
         <p>Set <var>this</var>.<code class="idl"><a data-link-type="idl" href="#dom-gpubuffer-mapping-slot" id="ref-for-dom-gpubuffer-mapping-slot①⓪">[[mapping]]</a></code> to null.</p>
       </ol>
@@ -6126,17 +6128,17 @@ called the render pass encoder can no longer be used.</p>
     <c- b>void</c-> <dfn class="idl-code" data-dfn-for="GPUQueue" data-dfn-type="method" data-export data-lt="signal(fence, signalValue)" id="dom-gpuqueue-signal"><code><c- g>signal</c-></code><a class="self-link" href="#dom-gpuqueue-signal"></a></dfn>(<a class="n" data-link-type="idl-name" href="#gpufence" id="ref-for-gpufence①"><c- n>GPUFence</c-></a> <dfn class="idl-code" data-dfn-for="GPUQueue/signal(fence, signalValue)" data-dfn-type="argument" data-export id="dom-gpuqueue-signal-fence-signalvalue-fence"><code><c- g>fence</c-></code><a class="self-link" href="#dom-gpuqueue-signal-fence-signalvalue-fence"></a></dfn>, <a class="n" data-link-type="idl-name" href="#typedefdef-gpufencevalue" id="ref-for-typedefdef-gpufencevalue"><c- n>GPUFenceValue</c-></a> <dfn class="idl-code" data-dfn-for="GPUQueue/signal(fence, signalValue)" data-dfn-type="argument" data-export id="dom-gpuqueue-signal-fence-signalvalue-signalvalue"><code><c- g>signalValue</c-></code><a class="self-link" href="#dom-gpuqueue-signal-fence-signalvalue-signalvalue"></a></dfn>);
 
     <c- b>void</c-> <a class="idl-code" data-link-type="method" href="#dom-gpuqueue-writebuffer" id="ref-for-dom-gpuqueue-writebuffer"><c- g>writeBuffer</c-></a>(
-        <a class="n" data-link-type="idl-name" href="#gpubuffer" id="ref-for-gpubuffer⑦⑤"><c- n>GPUBuffer</c-></a> <dfn class="idl-code" data-dfn-for="GPUQueue/writeBuffer(buffer, bufferOffset, data, dataOffset, size), GPUQueue/writeBuffer(buffer, bufferOffset, data, dataOffset), GPUQueue/writeBuffer(buffer, bufferOffset, data)" data-dfn-type="argument" data-export id="dom-gpuqueue-writebuffer-buffer-bufferoffset-data-dataoffset-size-buffer"><code><c- g>buffer</c-></code><a class="self-link" href="#dom-gpuqueue-writebuffer-buffer-bufferoffset-data-dataoffset-size-buffer"></a></dfn>,
-        <a class="n" data-link-type="idl-name" href="#typedefdef-gpusize64" id="ref-for-typedefdef-gpusize64④②"><c- n>GPUSize64</c-></a> <dfn class="idl-code" data-dfn-for="GPUQueue/writeBuffer(buffer, bufferOffset, data, dataOffset, size), GPUQueue/writeBuffer(buffer, bufferOffset, data, dataOffset), GPUQueue/writeBuffer(buffer, bufferOffset, data)" data-dfn-type="argument" data-export id="dom-gpuqueue-writebuffer-buffer-bufferoffset-data-dataoffset-size-bufferoffset"><code><c- g>bufferOffset</c-></code><a class="self-link" href="#dom-gpuqueue-writebuffer-buffer-bufferoffset-data-dataoffset-size-bufferoffset"></a></dfn>,
-        [<a class="idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#AllowShared" id="ref-for-AllowShared"><c- g>AllowShared</c-></a>] <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-ArrayBuffer" id="ref-for-idl-ArrayBuffer①⑤"><c- b>ArrayBuffer</c-></a> <dfn class="idl-code" data-dfn-for="GPUQueue/writeBuffer(buffer, bufferOffset, data, dataOffset, size), GPUQueue/writeBuffer(buffer, bufferOffset, data, dataOffset), GPUQueue/writeBuffer(buffer, bufferOffset, data)" data-dfn-type="argument" data-export id="dom-gpuqueue-writebuffer-buffer-bufferoffset-data-dataoffset-size-data"><code><c- g>data</c-></code><a class="self-link" href="#dom-gpuqueue-writebuffer-buffer-bufferoffset-data-dataoffset-size-data"></a></dfn>,
-        <c- b>optional</c-> <a class="n" data-link-type="idl-name" href="#typedefdef-gpusize64" id="ref-for-typedefdef-gpusize64④③"><c- n>GPUSize64</c-></a> <dfn class="idl-code" data-dfn-for="GPUQueue/writeBuffer(buffer, bufferOffset, data, dataOffset, size), GPUQueue/writeBuffer(buffer, bufferOffset, data, dataOffset), GPUQueue/writeBuffer(buffer, bufferOffset, data)" data-dfn-type="argument" data-export id="dom-gpuqueue-writebuffer-buffer-bufferoffset-data-dataoffset-size-dataoffset"><code><c- g>dataOffset</c-></code><a class="self-link" href="#dom-gpuqueue-writebuffer-buffer-bufferoffset-data-dataoffset-size-dataoffset"></a></dfn> = 0,
-        <c- b>optional</c-> <a class="n" data-link-type="idl-name" href="#typedefdef-gpusize64" id="ref-for-typedefdef-gpusize64④④"><c- n>GPUSize64</c-></a> <dfn class="idl-code" data-dfn-for="GPUQueue/writeBuffer(buffer, bufferOffset, data, dataOffset, size), GPUQueue/writeBuffer(buffer, bufferOffset, data, dataOffset), GPUQueue/writeBuffer(buffer, bufferOffset, data)" data-dfn-type="argument" data-export id="dom-gpuqueue-writebuffer-buffer-bufferoffset-data-dataoffset-size-size"><code><c- g>size</c-></code><a class="self-link" href="#dom-gpuqueue-writebuffer-buffer-bufferoffset-data-dataoffset-size-size"></a></dfn>);
+        <a class="n" data-link-type="idl-name" href="#gpubuffer" id="ref-for-gpubuffer⑦⑤"><c- n>GPUBuffer</c-></a> <a class="idl-code" data-link-type="argument" href="#dom-gpuqueue-writebuffer-buffer-bufferoffset-data-dataoffset-size-buffer" id="ref-for-dom-gpuqueue-writebuffer-buffer-bufferoffset-data-dataoffset-size-buffer"><c- g>buffer</c-></a>,
+        <a class="n" data-link-type="idl-name" href="#typedefdef-gpusize64" id="ref-for-typedefdef-gpusize64④②"><c- n>GPUSize64</c-></a> <a class="idl-code" data-link-type="argument" href="#dom-gpuqueue-writebuffer-buffer-bufferoffset-data-dataoffset-size-bufferoffset" id="ref-for-dom-gpuqueue-writebuffer-buffer-bufferoffset-data-dataoffset-size-bufferoffset"><c- g>bufferOffset</c-></a>,
+        [<a class="idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#AllowShared" id="ref-for-AllowShared"><c- g>AllowShared</c-></a>] <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-ArrayBuffer" id="ref-for-idl-ArrayBuffer①⑤"><c- b>ArrayBuffer</c-></a> <a class="idl-code" data-link-type="argument" href="#dom-gpuqueue-writebuffer-buffer-bufferoffset-data-dataoffset-size-data" id="ref-for-dom-gpuqueue-writebuffer-buffer-bufferoffset-data-dataoffset-size-data"><c- g>data</c-></a>,
+        <c- b>optional</c-> <a class="n" data-link-type="idl-name" href="#typedefdef-gpusize64" id="ref-for-typedefdef-gpusize64④③"><c- n>GPUSize64</c-></a> <a class="idl-code" data-link-type="argument" href="#dom-gpuqueue-writebuffer-buffer-bufferoffset-data-dataoffset-size-dataoffset" id="ref-for-dom-gpuqueue-writebuffer-buffer-bufferoffset-data-dataoffset-size-dataoffset"><c- g>dataOffset</c-></a> = 0,
+        <c- b>optional</c-> <a class="n" data-link-type="idl-name" href="#typedefdef-gpusize64" id="ref-for-typedefdef-gpusize64④④"><c- n>GPUSize64</c-></a> <a class="idl-code" data-link-type="argument" href="#dom-gpuqueue-writebuffer-buffer-bufferoffset-data-dataoffset-size-size" id="ref-for-dom-gpuqueue-writebuffer-buffer-bufferoffset-data-dataoffset-size-size"><c- g>size</c-></a>);
 
     <c- b>void</c-> <a class="idl-code" data-link-type="method" href="#dom-gpuqueue-writetexture" id="ref-for-dom-gpuqueue-writetexture"><c- g>writeTexture</c-></a>(
-      <a class="n" data-link-type="idl-name" href="#dictdef-gputexturecopyview" id="ref-for-dictdef-gputexturecopyview①⑦"><c- n>GPUTextureCopyView</c-></a> <dfn class="idl-code" data-dfn-for="GPUQueue/writeTexture(destination, data, dataLayout, size)" data-dfn-type="argument" data-export id="dom-gpuqueue-writetexture-destination-data-datalayout-size-destination"><code><c- g>destination</c-></code><a class="self-link" href="#dom-gpuqueue-writetexture-destination-data-datalayout-size-destination"></a></dfn>,
-      [<a class="idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#AllowShared" id="ref-for-AllowShared①"><c- g>AllowShared</c-></a>] <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-ArrayBuffer" id="ref-for-idl-ArrayBuffer①⑥"><c- b>ArrayBuffer</c-></a> <dfn class="idl-code" data-dfn-for="GPUQueue/writeTexture(destination, data, dataLayout, size)" data-dfn-type="argument" data-export id="dom-gpuqueue-writetexture-destination-data-datalayout-size-data"><code><c- g>data</c-></code><a class="self-link" href="#dom-gpuqueue-writetexture-destination-data-datalayout-size-data"></a></dfn>,
-      <a class="n" data-link-type="idl-name" href="#dictdef-gputexturedatalayout" id="ref-for-dictdef-gputexturedatalayout⑤"><c- n>GPUTextureDataLayout</c-></a> <dfn class="idl-code" data-dfn-for="GPUQueue/writeTexture(destination, data, dataLayout, size)" data-dfn-type="argument" data-export id="dom-gpuqueue-writetexture-destination-data-datalayout-size-datalayout"><code><c- g>dataLayout</c-></code><a class="self-link" href="#dom-gpuqueue-writetexture-destination-data-datalayout-size-datalayout"></a></dfn>,
-      <a class="n" data-link-type="idl-name" href="#typedefdef-gpuextent3d" id="ref-for-typedefdef-gpuextent3d①④"><c- n>GPUExtent3D</c-></a> <dfn class="idl-code" data-dfn-for="GPUQueue/writeTexture(destination, data, dataLayout, size)" data-dfn-type="argument" data-export id="dom-gpuqueue-writetexture-destination-data-datalayout-size-size"><code><c- g>size</c-></code><a class="self-link" href="#dom-gpuqueue-writetexture-destination-data-datalayout-size-size"></a></dfn>);
+      <a class="n" data-link-type="idl-name" href="#dictdef-gputexturecopyview" id="ref-for-dictdef-gputexturecopyview①⑦"><c- n>GPUTextureCopyView</c-></a> <a class="idl-code" data-link-type="argument" href="#dom-gpuqueue-writetexture-destination-data-datalayout-size-destination" id="ref-for-dom-gpuqueue-writetexture-destination-data-datalayout-size-destination"><c- g>destination</c-></a>,
+      [<a class="idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#AllowShared" id="ref-for-AllowShared①"><c- g>AllowShared</c-></a>] <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-ArrayBuffer" id="ref-for-idl-ArrayBuffer①⑥"><c- b>ArrayBuffer</c-></a> <a class="idl-code" data-link-type="argument" href="#dom-gpuqueue-writetexture-destination-data-datalayout-size-data" id="ref-for-dom-gpuqueue-writetexture-destination-data-datalayout-size-data"><c- g>data</c-></a>,
+      <a class="n" data-link-type="idl-name" href="#dictdef-gputexturedatalayout" id="ref-for-dictdef-gputexturedatalayout⑤"><c- n>GPUTextureDataLayout</c-></a> <a class="idl-code" data-link-type="argument" href="#dom-gpuqueue-writetexture-destination-data-datalayout-size-datalayout" id="ref-for-dom-gpuqueue-writetexture-destination-data-datalayout-size-datalayout"><c- g>dataLayout</c-></a>,
+      <a class="n" data-link-type="idl-name" href="#typedefdef-gpuextent3d" id="ref-for-typedefdef-gpuextent3d①④"><c- n>GPUExtent3D</c-></a> <a class="idl-code" data-link-type="argument" href="#dom-gpuqueue-writetexture-destination-data-datalayout-size-size" id="ref-for-dom-gpuqueue-writetexture-destination-data-datalayout-size-size"><c- g>size</c-></a>);
 
     <c- b>void</c-> <a class="idl-code" data-link-type="method" href="#dom-gpuqueue-copyimagebitmaptotexture" id="ref-for-dom-gpuqueue-copyimagebitmaptotexture"><c- g>copyImageBitmapToTexture</c-></a>(
         <a class="n" data-link-type="idl-name" href="#dictdef-gpuimagebitmapcopyview" id="ref-for-dictdef-gpuimagebitmapcopyview①"><c- n>GPUImageBitmapCopyView</c-></a> <dfn class="idl-code" data-dfn-for="GPUQueue/copyImageBitmapToTexture(source, destination, copySize)" data-dfn-type="argument" data-export id="dom-gpuqueue-copyimagebitmaptotexture-source-destination-copysize-source"><code><c- g>source</c-></code><a class="self-link" href="#dom-gpuqueue-copyimagebitmaptotexture-source-destination-copysize-source"></a></dfn>,
@@ -6155,15 +6157,15 @@ called the render pass encoder can no longer be used.</p>
       <p><strong>Arguments:</strong></p>
       <ul>
        <li data-md>
-        <p><code class="idl"><a data-link-type="idl" href="#gpubuffer" id="ref-for-gpubuffer⑦⑦">GPUBuffer</a></code> <var>buffer</var></p>
+        <p><var>buffer</var>: <code class="idl"><a data-link-type="idl" href="#gpubuffer" id="ref-for-gpubuffer⑦⑦">GPUBuffer</a></code> <dfn class="dfn-paneled idl-code" data-dfn-for="GPUQueue/writeBuffer(buffer, bufferOffset, data, dataOffset, size)" data-dfn-type="argument" data-export id="dom-gpuqueue-writebuffer-buffer-bufferoffset-data-dataoffset-size-buffer"><code>buffer</code></dfn></p>
        <li data-md>
-        <p><code class="idl"><a data-link-type="idl" href="#typedefdef-gpusize64" id="ref-for-typedefdef-gpusize64④⑤">GPUSize64</a></code> <var>bufferOffset</var></p>
+        <p><var>bufferOffset</var>: <code class="idl"><a data-link-type="idl" href="#typedefdef-gpusize64" id="ref-for-typedefdef-gpusize64④⑤">GPUSize64</a></code> <dfn class="dfn-paneled idl-code" data-dfn-for="GPUQueue/writeBuffer(buffer, bufferOffset, data, dataOffset, size)" data-dfn-type="argument" data-export id="dom-gpuqueue-writebuffer-buffer-bufferoffset-data-dataoffset-size-bufferoffset"><code>bufferOffset</code></dfn></p>
        <li data-md>
-        <p><code>[<code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#AllowShared" id="ref-for-AllowShared②">AllowShared</a></code>] <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-ArrayBuffer" id="ref-for-idl-ArrayBuffer①⑦">ArrayBuffer</a></code></code> <var>data</var></p>
+        <p><var>data</var>: <code>[<code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#AllowShared" id="ref-for-AllowShared②">AllowShared</a></code>] <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-ArrayBuffer" id="ref-for-idl-ArrayBuffer①⑦">ArrayBuffer</a></code></code> <dfn class="dfn-paneled idl-code" data-dfn-for="GPUQueue/writeBuffer(buffer, bufferOffset, data, dataOffset, size)" data-dfn-type="argument" data-export id="dom-gpuqueue-writebuffer-buffer-bufferoffset-data-dataoffset-size-data"><code>data</code></dfn></p>
        <li data-md>
-        <p>optional <code class="idl"><a data-link-type="idl" href="#typedefdef-gpusize64" id="ref-for-typedefdef-gpusize64④⑥">GPUSize64</a></code> <var>dataOffset</var> = 0</p>
+        <p><var>dataOffset</var>: optional <code class="idl"><a data-link-type="idl" href="#typedefdef-gpusize64" id="ref-for-typedefdef-gpusize64④⑥">GPUSize64</a></code> <dfn class="dfn-paneled idl-code" data-dfn-for="GPUQueue/writeBuffer(buffer, bufferOffset, data, dataOffset, size)" data-dfn-type="argument" data-export id="dom-gpuqueue-writebuffer-buffer-bufferoffset-data-dataoffset-size-dataoffset"><code>dataOffset</code></dfn> = 0</p>
        <li data-md>
-        <p>optional <code class="idl"><a data-link-type="idl" href="#typedefdef-gpusize64" id="ref-for-typedefdef-gpusize64④⑦">GPUSize64</a></code> <var>size</var></p>
+        <p><var>size</var>: optional <code class="idl"><a data-link-type="idl" href="#typedefdef-gpusize64" id="ref-for-typedefdef-gpusize64④⑦">GPUSize64</a></code> <dfn class="dfn-paneled idl-code" data-dfn-for="GPUQueue/writeBuffer(buffer, bufferOffset, data, dataOffset, size)" data-dfn-type="argument" data-export id="dom-gpuqueue-writebuffer-buffer-bufferoffset-data-dataoffset-size-size"><code>size</code></dfn></p>
       </ul>
       <p><strong>Returns:</strong> <code>void</code></p>
       <ul>
@@ -6173,7 +6175,7 @@ let <var>contentsSize</var> be <var>data</var>.<code>byteLength</code> − <var>
 Otherwise, let <var>contentsSize</var> be <var>size</var>.</p>
        <li data-md>
         <p>If any of the following conditions are unsatisfied,
-throw <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#operationerror" id="ref-for-operationerror④">OperationError</a></code> and stop.</p>
+throw <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#operationerror" id="ref-for-operationerror③">OperationError</a></code> and stop.</p>
         <div class="validusage">
          <ul>
           <li data-md>
@@ -6222,19 +6224,19 @@ generate a validation error and stop.</p>
       <p><strong>Arguments:</strong></p>
       <ul>
        <li data-md>
-        <p><code class="idl"><a data-link-type="idl" href="#dictdef-gputexturecopyview" id="ref-for-dictdef-gputexturecopyview①⑨">GPUTextureCopyView</a></code> <var>destination</var></p>
+        <p><var>destination</var>: <code class="idl"><a data-link-type="idl" href="#dictdef-gputexturecopyview" id="ref-for-dictdef-gputexturecopyview①⑨">GPUTextureCopyView</a></code> <dfn class="dfn-paneled idl-code" data-dfn-for="GPUQueue/writeTexture(destination, data, dataLayout, size)" data-dfn-type="argument" data-export id="dom-gpuqueue-writetexture-destination-data-datalayout-size-destination"><code>destination</code></dfn></p>
        <li data-md>
-        <p><code>[<code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#AllowShared" id="ref-for-AllowShared③">AllowShared</a></code>] <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-ArrayBuffer" id="ref-for-idl-ArrayBuffer①⑧">ArrayBuffer</a></code></code> <var>data</var></p>
+        <p><var>data</var>: <code>[<code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#AllowShared" id="ref-for-AllowShared③">AllowShared</a></code>] <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#idl-ArrayBuffer" id="ref-for-idl-ArrayBuffer①⑧">ArrayBuffer</a></code></code> <dfn class="dfn-paneled idl-code" data-dfn-for="GPUQueue/writeTexture(destination, data, dataLayout, size)" data-dfn-type="argument" data-export id="dom-gpuqueue-writetexture-destination-data-datalayout-size-data"><code>data</code></dfn></p>
        <li data-md>
-        <p><code class="idl"><a data-link-type="idl" href="#dictdef-gputexturedatalayout" id="ref-for-dictdef-gputexturedatalayout⑥">GPUTextureDataLayout</a></code> <var>dataLayout</var></p>
+        <p><var>dataLayout</var>: <code class="idl"><a data-link-type="idl" href="#dictdef-gputexturedatalayout" id="ref-for-dictdef-gputexturedatalayout⑥">GPUTextureDataLayout</a></code> <dfn class="dfn-paneled idl-code" data-dfn-for="GPUQueue/writeTexture(destination, data, dataLayout, size)" data-dfn-type="argument" data-export id="dom-gpuqueue-writetexture-destination-data-datalayout-size-datalayout"><code>dataLayout</code></dfn></p>
        <li data-md>
-        <p><code class="idl"><a data-link-type="idl" href="#typedefdef-gpuextent3d" id="ref-for-typedefdef-gpuextent3d①⑥">GPUExtent3D</a></code> <var>size</var></p>
+        <p><var>size</var>: <code class="idl"><a data-link-type="idl" href="#typedefdef-gpuextent3d" id="ref-for-typedefdef-gpuextent3d①⑥">GPUExtent3D</a></code> <dfn class="dfn-paneled idl-code" data-dfn-for="GPUQueue/writeTexture(destination, data, dataLayout, size)" data-dfn-type="argument" data-export id="dom-gpuqueue-writetexture-destination-data-datalayout-size-size"><code>size</code></dfn></p>
       </ul>
       <p><strong>Returns:</strong> <code>void</code></p>
       <ul>
        <li data-md>
         <p>If any of the following conditions are unsatisfied,
-throw <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#operationerror" id="ref-for-operationerror⑤">OperationError</a></code> and stop.</p>
+throw <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#operationerror" id="ref-for-operationerror④">OperationError</a></code> and stop.</p>
         <div class="validusage">
          <ul>
           <li data-md>
@@ -6277,7 +6279,7 @@ is satisfied.</p>
     <dt data-md><dfn class="dfn-paneled idl-code" data-dfn-for="GPUQueue" data-dfn-type="method" data-export id="dom-gpuqueue-copyimagebitmaptotexture"><code>copyImageBitmapToTexture(source, destination, copySize)</code></dfn>
     <dd data-md>
      <p>Schedules a copy operation of the contents of an image bitmap into the destination texture.</p>
-     <p>The operation throws <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#operationerror" id="ref-for-operationerror⑥">OperationError</a></code> if any of the following any of the following requirements are unmet:</p>
+     <p>The operation throws <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#operationerror" id="ref-for-operationerror⑤">OperationError</a></code> if any of the following any of the following requirements are unmet:</p>
      <ul>
       <li data-md>
        <p><code class="idl"><a data-link-type="idl" href="#dom-gpuqueue-copyimagebitmaptotexture-source-destination-copysize-copysize" id="ref-for-dom-gpuqueue-copyimagebitmaptotexture-source-destination-copysize-copysize">copySize</a></code>.<a data-link-type="dfn" href="#extent3d-depth" id="ref-for-extent3d-depth⑧">depth</a> must be <code>1</code>.</p>
@@ -6423,7 +6425,7 @@ rendering operations have been flushed to the drawing buffer.</p>
     <c- b>Promise</c->&lt;<a class="n" data-link-type="idl-name" href="#typedefdef-gpuerror" id="ref-for-typedefdef-gpuerror"><c- n>GPUError</c-></a>?> <dfn class="dfn-paneled idl-code" data-dfn-for="GPUDevice" data-dfn-type="method" data-export data-lt="popErrorScope()" id="dom-gpudevice-poperrorscope"><code><c- g>popErrorScope</c-></code></dfn>();
 };
 </pre>
-   <p><code class="idl"><a data-link-type="idl" href="#dom-gpudevice-poperrorscope" id="ref-for-dom-gpudevice-poperrorscope">popErrorScope()</a></code> throws <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#operationerror" id="ref-for-operationerror⑦">OperationError</a></code> if there are no error scopes on the stack. <code class="idl"><a data-link-type="idl" href="#dom-gpudevice-poperrorscope" id="ref-for-dom-gpudevice-poperrorscope①">popErrorScope()</a></code> rejects with <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#operationerror" id="ref-for-operationerror⑧">OperationError</a></code> if the device is lost.</p>
+   <p><code class="idl"><a data-link-type="idl" href="#dom-gpudevice-poperrorscope" id="ref-for-dom-gpudevice-poperrorscope">popErrorScope()</a></code> throws <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#operationerror" id="ref-for-operationerror⑥">OperationError</a></code> if there are no error scopes on the stack. <code class="idl"><a data-link-type="idl" href="#dom-gpudevice-poperrorscope" id="ref-for-dom-gpudevice-poperrorscope①">popErrorScope()</a></code> rejects with <code class="idl"><a data-link-type="idl" href="https://heycam.github.io/webidl/#operationerror" id="ref-for-operationerror⑦">OperationError</a></code> if the device is lost.</p>
    <h3 class="heading settled" data-level="20.3" id="telemetry"><span class="secno">20.3. </span><span class="content">Telemetry</span><a class="self-link" href="#telemetry"></a></h3>
 <pre class="idl highlight def">[
     <a class="idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed" id="ref-for-Exposed④"><c- g>Exposed</c-></a>=(<c- n>Window</c->, <c- n>DedicatedWorker</c->)
@@ -7838,12 +7840,11 @@ either <code class="idl"><a data-link-type="idl" href="#dictdef-gpuextent3ddict"
   <aside class="dfn-panel" data-for="term-for-operationerror">
    <a href="https://heycam.github.io/webidl/#operationerror">https://heycam.github.io/webidl/#operationerror</a><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-operationerror">4.3.1. requestAdapter(options)</a>
-    <li><a href="#ref-for-operationerror①">4.4. GPUAdapter</a>
-    <li><a href="#ref-for-operationerror②">5.5.2. getMappedRange(offset, size)</a>
-    <li><a href="#ref-for-operationerror③">5.5.3. unmap()</a>
-    <li><a href="#ref-for-operationerror④">17. Queues</a> <a href="#ref-for-operationerror⑤">(2)</a> <a href="#ref-for-operationerror⑥">(3)</a>
-    <li><a href="#ref-for-operationerror⑦">20.2. Error Scopes</a> <a href="#ref-for-operationerror⑧">(2)</a>
+    <li><a href="#ref-for-operationerror">4.4. GPUAdapter</a>
+    <li><a href="#ref-for-operationerror①">5.5.2. getMappedRange(offset, size)</a>
+    <li><a href="#ref-for-operationerror②">5.5.3. unmap()</a>
+    <li><a href="#ref-for-operationerror③">17. Queues</a> <a href="#ref-for-operationerror④">(2)</a> <a href="#ref-for-operationerror⑤">(3)</a>
+    <li><a href="#ref-for-operationerror⑥">20.2. Error Scopes</a> <a href="#ref-for-operationerror⑦">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-idl-promise">
@@ -7943,17 +7944,16 @@ either <code class="idl"><a data-link-type="idl" href="#dictdef-gpuextent3ddict"
   <aside class="dfn-panel" data-for="term-for-reject">
    <a href="https://heycam.github.io/webidl/#reject">https://heycam.github.io/webidl/#reject</a><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-reject">4.3.1. requestAdapter(options)</a>
-    <li><a href="#ref-for-reject①">4.4. GPUAdapter</a>
-    <li><a href="#ref-for-reject②">5.5.3. unmap()</a>
+    <li><a href="#ref-for-reject">4.4. GPUAdapter</a>
+    <li><a href="#ref-for-reject①">5.5.3. unmap()</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-resolve">
    <a href="https://heycam.github.io/webidl/#resolve">https://heycam.github.io/webidl/#resolve</a><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-resolve">3.4.1. Timelines</a>
-    <li><a href="#ref-for-resolve①">4.3.1. requestAdapter(options)</a>
-    <li><a href="#ref-for-resolve②">4.4. GPUAdapter</a>
+    <li><a href="#ref-for-resolve①">4.3.1. requestAdapter(options)</a> <a href="#ref-for-resolve②">(2)</a>
+    <li><a href="#ref-for-resolve③">4.4. GPUAdapter</a> <a href="#ref-for-resolve④">(2)</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="term-for-idl-unsigned-long">
@@ -8075,7 +8075,7 @@ either <code class="idl"><a data-link-type="idl" href="#dictdef-gpuextent3ddict"
 
 [<a class="idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#Exposed" id="ref-for-Exposed②①"><c- g>Exposed</c-></a>=(<c- n>Window</c->, <c- n>DedicatedWorker</c->)]
 <c- b>interface</c-> <a class="idl-code" data-link-type="interface" href="#gpu" id="ref-for-gpu③①"><c- g>GPU</c-></a> {
-    <c- b>Promise</c->&lt;<a class="n" data-link-type="idl-name" href="#gpuadapter" id="ref-for-gpuadapter④①"><c- n>GPUAdapter</c-></a>> <a class="idl-code" data-link-type="method" href="#dom-gpu-requestadapter" id="ref-for-dom-gpu-requestadapter①①"><c- g>requestAdapter</c-></a>(<c- b>optional</c-> <a class="n" data-link-type="idl-name" href="#dictdef-gpurequestadapteroptions" id="ref-for-dictdef-gpurequestadapteroptions④"><c- n>GPURequestAdapterOptions</c-></a> <a href="#dom-gpu-requestadapter-options-options"><code><c- g>options</c-></code></a> = {});
+    <c- b>Promise</c->&lt;<a class="n" data-link-type="idl-name" href="#gpuadapter" id="ref-for-gpuadapter④①"><c- n>GPUAdapter</c-></a>?> <a class="idl-code" data-link-type="method" href="#dom-gpu-requestadapter" id="ref-for-dom-gpu-requestadapter①①"><c- g>requestAdapter</c-></a>(<c- b>optional</c-> <a class="n" data-link-type="idl-name" href="#dictdef-gpurequestadapteroptions" id="ref-for-dictdef-gpurequestadapteroptions④"><c- n>GPURequestAdapterOptions</c-></a> <a href="#dom-gpu-requestadapter-options-options"><code><c- g>options</c-></code></a> = {});
 };
 
 <c- b>dictionary</c-> <a class="idl-code" data-link-type="dictionary" href="#dictdef-gpurequestadapteroptions" id="ref-for-dictdef-gpurequestadapteroptions②①"><c- g>GPURequestAdapterOptions</c-></a> {
@@ -8092,7 +8092,7 @@ either <code class="idl"><a data-link-type="idl" href="#dictdef-gpuextent3ddict"
     <c- b>readonly</c-> <c- b>attribute</c-> <c- b>FrozenArray</c->&lt;<a class="n" data-link-type="idl-name" href="#enumdef-gpuextensionname" id="ref-for-enumdef-gpuextensionname②①"><c- n>GPUExtensionName</c-></a>> <a class="idl-code" data-link-type="attribute" data-readonly data-type="FrozenArray<GPUExtensionName>" href="#dom-gpuadapter-extensions" id="ref-for-dom-gpuadapter-extensions①"><c- g>extensions</c-></a>;
     //readonly attribute GPULimits limits; Don’t expose higher limits for now.
 
-    <c- b>Promise</c->&lt;<a class="n" data-link-type="idl-name" href="#gpudevice" id="ref-for-gpudevice⑤①"><c- n>GPUDevice</c-></a>> <a class="idl-code" data-link-type="method" href="#dom-gpuadapter-requestdevice" id="ref-for-dom-gpuadapter-requestdevice②"><c- g>requestDevice</c-></a>(<c- b>optional</c-> <a class="n" data-link-type="idl-name" href="#dictdef-gpudevicedescriptor" id="ref-for-dictdef-gpudevicedescriptor①①"><c- n>GPUDeviceDescriptor</c-></a> <a href="#dom-gpuadapter-requestdevice-descriptor-descriptor"><code><c- g>descriptor</c-></code></a> = {});
+    <c- b>Promise</c->&lt;<a class="n" data-link-type="idl-name" href="#gpudevice" id="ref-for-gpudevice⑤①"><c- n>GPUDevice</c-></a>?> <a class="idl-code" data-link-type="method" href="#dom-gpuadapter-requestdevice" id="ref-for-dom-gpuadapter-requestdevice②"><c- g>requestDevice</c-></a>(<c- b>optional</c-> <a class="n" data-link-type="idl-name" href="#dictdef-gpudevicedescriptor" id="ref-for-dictdef-gpudevicedescriptor①①"><c- n>GPUDeviceDescriptor</c-></a> <a class="idl-code" data-link-type="argument" href="#dom-gpuadapter-requestdevice-descriptor-descriptor" id="ref-for-dom-gpuadapter-requestdevice-descriptor-descriptor①"><c- g>descriptor</c-></a> = {});
 };
 
 <c- b>dictionary</c-> <a class="idl-code" data-link-type="dictionary" href="#dictdef-gpudevicedescriptor" id="ref-for-dictdef-gpudevicedescriptor④①"><c- g>GPUDeviceDescriptor</c-></a> : <a class="n" data-link-type="idl-name" href="#dictdef-gpuobjectdescriptorbase" id="ref-for-dictdef-gpuobjectdescriptorbase①①⓪"><c- n>GPUObjectDescriptorBase</c-></a> {
@@ -8890,17 +8890,17 @@ either <code class="idl"><a data-link-type="idl" href="#dictdef-gpuextent3ddict"
     <c- b>void</c-> <a href="#dom-gpuqueue-signal"><code><c- g>signal</c-></code></a>(<a class="n" data-link-type="idl-name" href="#gpufence" id="ref-for-gpufence①①"><c- n>GPUFence</c-></a> <a href="#dom-gpuqueue-signal-fence-signalvalue-fence"><code><c- g>fence</c-></code></a>, <a class="n" data-link-type="idl-name" href="#typedefdef-gpufencevalue" id="ref-for-typedefdef-gpufencevalue④"><c- n>GPUFenceValue</c-></a> <a href="#dom-gpuqueue-signal-fence-signalvalue-signalvalue"><code><c- g>signalValue</c-></code></a>);
 
     <c- b>void</c-> <a class="idl-code" data-link-type="method" href="#dom-gpuqueue-writebuffer" id="ref-for-dom-gpuqueue-writebuffer①"><c- g>writeBuffer</c-></a>(
-        <a class="n" data-link-type="idl-name" href="#gpubuffer" id="ref-for-gpubuffer⑦⑤①"><c- n>GPUBuffer</c-></a> <a href="#dom-gpuqueue-writebuffer-buffer-bufferoffset-data-dataoffset-size-buffer"><code><c- g>buffer</c-></code></a>,
-        <a class="n" data-link-type="idl-name" href="#typedefdef-gpusize64" id="ref-for-typedefdef-gpusize64④②①"><c- n>GPUSize64</c-></a> <a href="#dom-gpuqueue-writebuffer-buffer-bufferoffset-data-dataoffset-size-bufferoffset"><code><c- g>bufferOffset</c-></code></a>,
-        [<a class="idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#AllowShared" id="ref-for-AllowShared④"><c- g>AllowShared</c-></a>] <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-ArrayBuffer" id="ref-for-idl-ArrayBuffer①⑤①"><c- b>ArrayBuffer</c-></a> <a href="#dom-gpuqueue-writebuffer-buffer-bufferoffset-data-dataoffset-size-data"><code><c- g>data</c-></code></a>,
-        <c- b>optional</c-> <a class="n" data-link-type="idl-name" href="#typedefdef-gpusize64" id="ref-for-typedefdef-gpusize64④③①"><c- n>GPUSize64</c-></a> <a href="#dom-gpuqueue-writebuffer-buffer-bufferoffset-data-dataoffset-size-dataoffset"><code><c- g>dataOffset</c-></code></a> = 0,
-        <c- b>optional</c-> <a class="n" data-link-type="idl-name" href="#typedefdef-gpusize64" id="ref-for-typedefdef-gpusize64④④①"><c- n>GPUSize64</c-></a> <a href="#dom-gpuqueue-writebuffer-buffer-bufferoffset-data-dataoffset-size-size"><code><c- g>size</c-></code></a>);
+        <a class="n" data-link-type="idl-name" href="#gpubuffer" id="ref-for-gpubuffer⑦⑤①"><c- n>GPUBuffer</c-></a> <a class="idl-code" data-link-type="argument" href="#dom-gpuqueue-writebuffer-buffer-bufferoffset-data-dataoffset-size-buffer" id="ref-for-dom-gpuqueue-writebuffer-buffer-bufferoffset-data-dataoffset-size-buffer①"><c- g>buffer</c-></a>,
+        <a class="n" data-link-type="idl-name" href="#typedefdef-gpusize64" id="ref-for-typedefdef-gpusize64④②①"><c- n>GPUSize64</c-></a> <a class="idl-code" data-link-type="argument" href="#dom-gpuqueue-writebuffer-buffer-bufferoffset-data-dataoffset-size-bufferoffset" id="ref-for-dom-gpuqueue-writebuffer-buffer-bufferoffset-data-dataoffset-size-bufferoffset①"><c- g>bufferOffset</c-></a>,
+        [<a class="idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#AllowShared" id="ref-for-AllowShared④"><c- g>AllowShared</c-></a>] <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-ArrayBuffer" id="ref-for-idl-ArrayBuffer①⑤①"><c- b>ArrayBuffer</c-></a> <a class="idl-code" data-link-type="argument" href="#dom-gpuqueue-writebuffer-buffer-bufferoffset-data-dataoffset-size-data" id="ref-for-dom-gpuqueue-writebuffer-buffer-bufferoffset-data-dataoffset-size-data①"><c- g>data</c-></a>,
+        <c- b>optional</c-> <a class="n" data-link-type="idl-name" href="#typedefdef-gpusize64" id="ref-for-typedefdef-gpusize64④③①"><c- n>GPUSize64</c-></a> <a class="idl-code" data-link-type="argument" href="#dom-gpuqueue-writebuffer-buffer-bufferoffset-data-dataoffset-size-dataoffset" id="ref-for-dom-gpuqueue-writebuffer-buffer-bufferoffset-data-dataoffset-size-dataoffset①"><c- g>dataOffset</c-></a> = 0,
+        <c- b>optional</c-> <a class="n" data-link-type="idl-name" href="#typedefdef-gpusize64" id="ref-for-typedefdef-gpusize64④④①"><c- n>GPUSize64</c-></a> <a class="idl-code" data-link-type="argument" href="#dom-gpuqueue-writebuffer-buffer-bufferoffset-data-dataoffset-size-size" id="ref-for-dom-gpuqueue-writebuffer-buffer-bufferoffset-data-dataoffset-size-size①"><c- g>size</c-></a>);
 
     <c- b>void</c-> <a class="idl-code" data-link-type="method" href="#dom-gpuqueue-writetexture" id="ref-for-dom-gpuqueue-writetexture①"><c- g>writeTexture</c-></a>(
-      <a class="n" data-link-type="idl-name" href="#dictdef-gputexturecopyview" id="ref-for-dictdef-gputexturecopyview①⑦①"><c- n>GPUTextureCopyView</c-></a> <a href="#dom-gpuqueue-writetexture-destination-data-datalayout-size-destination"><code><c- g>destination</c-></code></a>,
-      [<a class="idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#AllowShared" id="ref-for-AllowShared①①"><c- g>AllowShared</c-></a>] <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-ArrayBuffer" id="ref-for-idl-ArrayBuffer①⑥①"><c- b>ArrayBuffer</c-></a> <a href="#dom-gpuqueue-writetexture-destination-data-datalayout-size-data"><code><c- g>data</c-></code></a>,
-      <a class="n" data-link-type="idl-name" href="#dictdef-gputexturedatalayout" id="ref-for-dictdef-gputexturedatalayout⑤①"><c- n>GPUTextureDataLayout</c-></a> <a href="#dom-gpuqueue-writetexture-destination-data-datalayout-size-datalayout"><code><c- g>dataLayout</c-></code></a>,
-      <a class="n" data-link-type="idl-name" href="#typedefdef-gpuextent3d" id="ref-for-typedefdef-gpuextent3d①④①"><c- n>GPUExtent3D</c-></a> <a href="#dom-gpuqueue-writetexture-destination-data-datalayout-size-size"><code><c- g>size</c-></code></a>);
+      <a class="n" data-link-type="idl-name" href="#dictdef-gputexturecopyview" id="ref-for-dictdef-gputexturecopyview①⑦①"><c- n>GPUTextureCopyView</c-></a> <a class="idl-code" data-link-type="argument" href="#dom-gpuqueue-writetexture-destination-data-datalayout-size-destination" id="ref-for-dom-gpuqueue-writetexture-destination-data-datalayout-size-destination①"><c- g>destination</c-></a>,
+      [<a class="idl-code" data-link-type="extended-attribute" href="https://heycam.github.io/webidl/#AllowShared" id="ref-for-AllowShared①①"><c- g>AllowShared</c-></a>] <a class="idl-code" data-link-type="interface" href="https://heycam.github.io/webidl/#idl-ArrayBuffer" id="ref-for-idl-ArrayBuffer①⑥①"><c- b>ArrayBuffer</c-></a> <a class="idl-code" data-link-type="argument" href="#dom-gpuqueue-writetexture-destination-data-datalayout-size-data" id="ref-for-dom-gpuqueue-writetexture-destination-data-datalayout-size-data①"><c- g>data</c-></a>,
+      <a class="n" data-link-type="idl-name" href="#dictdef-gputexturedatalayout" id="ref-for-dictdef-gputexturedatalayout⑤①"><c- n>GPUTextureDataLayout</c-></a> <a class="idl-code" data-link-type="argument" href="#dom-gpuqueue-writetexture-destination-data-datalayout-size-datalayout" id="ref-for-dom-gpuqueue-writetexture-destination-data-datalayout-size-datalayout①"><c- g>dataLayout</c-></a>,
+      <a class="n" data-link-type="idl-name" href="#typedefdef-gpuextent3d" id="ref-for-typedefdef-gpuextent3d①④①"><c- n>GPUExtent3D</c-></a> <a class="idl-code" data-link-type="argument" href="#dom-gpuqueue-writetexture-destination-data-datalayout-size-size" id="ref-for-dom-gpuqueue-writetexture-destination-data-datalayout-size-size①"><c- g>size</c-></a>);
 
     <c- b>void</c-> <a class="idl-code" data-link-type="method" href="#dom-gpuqueue-copyimagebitmaptotexture" id="ref-for-dom-gpuqueue-copyimagebitmaptotexture①"><c- g>copyImageBitmapToTexture</c-></a>(
         <a class="n" data-link-type="idl-name" href="#dictdef-gpuimagebitmapcopyview" id="ref-for-dictdef-gpuimagebitmapcopyview①①"><c- n>GPUImageBitmapCopyView</c-></a> <a href="#dom-gpuqueue-copyimagebitmaptotexture-source-destination-copysize-source"><code><c- g>source</c-></code></a>,
@@ -9517,6 +9517,12 @@ Also should <code class="idl"><a data-link-type="idl" href="#dom-gpubufferbindin
    <ul>
     <li><a href="#ref-for-dom-gpuadapter-requestdevice">4.4. GPUAdapter</a>
     <li><a href="#ref-for-dom-gpuadapter-requestdevice①">4.5. GPUDevice</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="dom-gpuadapter-requestdevice-descriptor-descriptor">
+   <b><a href="#dom-gpuadapter-requestdevice-descriptor-descriptor">#dom-gpuadapter-requestdevice-descriptor-descriptor</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-gpuadapter-requestdevice-descriptor-descriptor">4.4. GPUAdapter</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dictdef-gpudevicedescriptor">
@@ -12482,10 +12488,64 @@ Also should <code class="idl"><a data-link-type="idl" href="#dom-gpubufferbindin
     <li><a href="#ref-for-dom-gpuqueue-writebuffer">17. Queues</a>
    </ul>
   </aside>
+  <aside class="dfn-panel" data-for="dom-gpuqueue-writebuffer-buffer-bufferoffset-data-dataoffset-size-buffer">
+   <b><a href="#dom-gpuqueue-writebuffer-buffer-bufferoffset-data-dataoffset-size-buffer">#dom-gpuqueue-writebuffer-buffer-bufferoffset-data-dataoffset-size-buffer</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-gpuqueue-writebuffer-buffer-bufferoffset-data-dataoffset-size-buffer">17. Queues</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="dom-gpuqueue-writebuffer-buffer-bufferoffset-data-dataoffset-size-bufferoffset">
+   <b><a href="#dom-gpuqueue-writebuffer-buffer-bufferoffset-data-dataoffset-size-bufferoffset">#dom-gpuqueue-writebuffer-buffer-bufferoffset-data-dataoffset-size-bufferoffset</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-gpuqueue-writebuffer-buffer-bufferoffset-data-dataoffset-size-bufferoffset">17. Queues</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="dom-gpuqueue-writebuffer-buffer-bufferoffset-data-dataoffset-size-data">
+   <b><a href="#dom-gpuqueue-writebuffer-buffer-bufferoffset-data-dataoffset-size-data">#dom-gpuqueue-writebuffer-buffer-bufferoffset-data-dataoffset-size-data</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-gpuqueue-writebuffer-buffer-bufferoffset-data-dataoffset-size-data">17. Queues</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="dom-gpuqueue-writebuffer-buffer-bufferoffset-data-dataoffset-size-dataoffset">
+   <b><a href="#dom-gpuqueue-writebuffer-buffer-bufferoffset-data-dataoffset-size-dataoffset">#dom-gpuqueue-writebuffer-buffer-bufferoffset-data-dataoffset-size-dataoffset</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-gpuqueue-writebuffer-buffer-bufferoffset-data-dataoffset-size-dataoffset">17. Queues</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="dom-gpuqueue-writebuffer-buffer-bufferoffset-data-dataoffset-size-size">
+   <b><a href="#dom-gpuqueue-writebuffer-buffer-bufferoffset-data-dataoffset-size-size">#dom-gpuqueue-writebuffer-buffer-bufferoffset-data-dataoffset-size-size</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-gpuqueue-writebuffer-buffer-bufferoffset-data-dataoffset-size-size">17. Queues</a>
+   </ul>
+  </aside>
   <aside class="dfn-panel" data-for="dom-gpuqueue-writetexture">
    <b><a href="#dom-gpuqueue-writetexture">#dom-gpuqueue-writetexture</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-dom-gpuqueue-writetexture">17. Queues</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="dom-gpuqueue-writetexture-destination-data-datalayout-size-destination">
+   <b><a href="#dom-gpuqueue-writetexture-destination-data-datalayout-size-destination">#dom-gpuqueue-writetexture-destination-data-datalayout-size-destination</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-gpuqueue-writetexture-destination-data-datalayout-size-destination">17. Queues</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="dom-gpuqueue-writetexture-destination-data-datalayout-size-data">
+   <b><a href="#dom-gpuqueue-writetexture-destination-data-datalayout-size-data">#dom-gpuqueue-writetexture-destination-data-datalayout-size-data</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-gpuqueue-writetexture-destination-data-datalayout-size-data">17. Queues</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="dom-gpuqueue-writetexture-destination-data-datalayout-size-datalayout">
+   <b><a href="#dom-gpuqueue-writetexture-destination-data-datalayout-size-datalayout">#dom-gpuqueue-writetexture-destination-data-datalayout-size-datalayout</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-gpuqueue-writetexture-destination-data-datalayout-size-datalayout">17. Queues</a>
+   </ul>
+  </aside>
+  <aside class="dfn-panel" data-for="dom-gpuqueue-writetexture-destination-data-datalayout-size-size">
+   <b><a href="#dom-gpuqueue-writetexture-destination-data-datalayout-size-size">#dom-gpuqueue-writetexture-destination-data-datalayout-size-size</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-gpuqueue-writetexture-destination-data-datalayout-size-size">17. Queues</a>
    </ul>
   </aside>
   <aside class="dfn-panel" data-for="dom-gpuqueue-copyimagebitmaptotexture">

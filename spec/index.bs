@@ -1194,6 +1194,7 @@ dictionary GPURequestAdapterOptions {
 enum GPUMajorPerformanceCaveatOption {
     "never",
     "last-resort",
+    "always",
 };
 
 enum GPUPowerPreference {
@@ -1228,10 +1229,12 @@ enum GPUPowerPreference {
             ::
                 Adapters with major performance caveats should only be allowed
                 if no other adapters are available.
-        </dl>
 
-        Issue: Add "always" as a third option, if requestAdapters is pluralized, which lists such
-        adapters last in the list.
+            : <dfn>"always"</dfn>
+            ::
+                Adapters with major performance caveats should always be allowed,
+                even if other adapters are available, but listed after adapters without caveats.
+        </dl>
 
     : <dfn>powerPreference</dfn>
     ::

@@ -1062,11 +1062,10 @@ into.
 A `GPUCanvasContext` provides a "current texture" via `getCurrentTexture()`.
 For <{canvas}> elements, this returns a texture for the *current frame*:
 
-- On `getCurrentTexture()`, a new `[[drawingBuffer]]` is created if one doesn't exist for the
-    current frame, wrapped in a `GPUTexture`, and returned.
-- During the "[=Update the rendering=]" step, the `[[drawingBuffer]]` becomes readonly. Then, it is
-    shared by the browser compositor (for display) and the page's canvas (readable using
-    drawImage/toDataURL/etc.)
+- On `getCurrentTexture()`, the `[[drawingBuffer]]` is wrapped in a new `GPUTexture` if one doesn't
+    exist for the current frame, and returned.
+- During the "[=Update the rendering=]" step, the `[[drawingBuffer]]` is given to the browser
+    compositor (for display) and cleared.
 
 ### `getPreferredCanvasFormat()` ### {#canvas-output-preferred-format}
 

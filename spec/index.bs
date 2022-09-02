@@ -3639,9 +3639,9 @@ interface GPUTexture {
 GPUTexture includes GPUObjectBase;
 </script>
 
-{{GPUTexture}} has the following attributes:
+{{GPUTexture}} has the following [=immutable properties=]:
 
-<dl dfn-type=attribute dfn-for=GPUTexture>
+<dl dfn-type=attribute dfn-for=GPUTexture data-timeline=const>
     : <dfn>width</dfn>
     ::
         The width of this {{GPUTexture}}.
@@ -3673,11 +3673,7 @@ GPUTexture includes GPUObjectBase;
     : <dfn>usage</dfn>
     ::
         The allowed usages for this {{GPUTexture}}.
-</dl>
 
-{{GPUTexture}} has the following internal slots:
-
-<dl dfn-type=attribute dfn-for=GPUTexture>
     : <dfn>\[[size]]</dfn>, of type {{GPUExtent3D}}
     ::
         The size of the texture (same as the {{GPUTexture/width}}, {{GPUTexture/height}}, and
@@ -3688,7 +3684,15 @@ GPUTexture includes GPUObjectBase;
         The set of {{GPUTextureFormat}}s that can be used {{GPUTextureViewDescriptor}}.{{GPUTextureViewDescriptor/format}}
         when creating views on this {{GPUTexture}}.
 
-    : <dfn>\[[destroyed]]</dfn>, of type `boolean`, initially false
+    : <dfn>\[[internals]]</dfn>, of type [=texture internals=], readonly, {{GPUObjectBase/[[internals]]|override}}
+    ::
+</dl>
+
+{{GPUTexture}}'s [=internal object=] is <dfn dfn>texture internals</dfn>, which
+extends [=internal object=] with the following [=device timeline slots=]:
+
+<dl dfn-type=dfn dfn-for="texture internals" data-timeline=device>
+    : <dfn>destroyed</dfn>, of type `boolean`, initially false
     ::
         If the texture is destroyed, it can no longer be used in any operation,
         and its underlying memory can be freed.
@@ -4036,7 +4040,13 @@ all previously submitted operations using it are complete.
 
                 [=Content timeline=] steps:
 
-                1. Set |this|.{{GPUTexture/[[destroyed]]}} to true.
+                1. Issue the subsequent steps on the [=Device timeline=] of
+                    |this|.{{GPUObjectBase/[[device]]}}.
+            </div>
+            <div data-timeline=device>
+                [=Device timeline=] steps:
+
+                1. Set |this|.{{GPUTexture/[[internals]]}}.[=texture internals/destroyed=] to true.
             </div>
         </div>
 </dl>

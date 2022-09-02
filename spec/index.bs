@@ -3222,7 +3222,7 @@ The {{GPUBufferUsage}} flags determine how a {{GPUBuffer}} may be used after its
 </dl>
 
 <div class=example>
-    Creating a 128 byte uniform buffer that can be written into:
+    Creating a 128 byte uniform buffer that can be copied into:
 
     <pre highlight=js>
         const buffer = gpuDevice.createBuffer({

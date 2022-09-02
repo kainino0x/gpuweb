@@ -3903,7 +3903,7 @@ The {{GPUTextureUsage}} flags determine how a {{GPUTexture}} may be used after i
                     |descriptor|.{{GPUTextureDescriptor/format}} with |this|.{{GPUObjectBase/[[device]]}}.
                 1. [$Validate texture format required features$] of each element of
                     |descriptor|.{{GPUTextureDescriptor/viewFormats}} with |this|.{{GPUObjectBase/[[device]]}}.
-                1. Let |t| be a new {{GPUTexture}} object.
+                1. Let [|t|, |ti|] be [=!=] [$create a new WebGPU object$](|this|, {{GPUTexture}}, |descriptor|).
                 1. Set |t|.{{GPUTexture/width}} to |descriptor|.{{GPUTextureDescriptor/size}}.[=Extent3D/width=].
                 1. Set |t|.{{GPUTexture/height}} to |descriptor|.{{GPUTextureDescriptor/size}}.[=Extent3D/height=].
                 1. Set |t|.{{GPUTexture/depthOrArrayLayers}} to |descriptor|.{{GPUTextureDescriptor/size}}.[=Extent3D/depthOrArrayLayers=].
@@ -3912,6 +3912,8 @@ The {{GPUTextureUsage}} flags determine how a {{GPUTexture}} may be used after i
                 1. Set |t|.{{GPUTexture/dimension}} to |descriptor|.{{GPUTextureDescriptor/dimension}}.
                 1. Set |t|.{{GPUTexture/format}} to |descriptor|.{{GPUTextureDescriptor/format}}.
                 1. Set |t|.{{GPUTexture/usage}} to |descriptor|.{{GPUTextureDescriptor/usage}}.
+                1. Set |t|.{{GPUTexture/[[size]]}} to |descriptor|.{{GPUTextureDescriptor/size}}.
+                1. Set |t|.{{GPUTexture/[[viewFormats]]}} to |descriptor|.{{GPUTextureDescriptor/viewFormats}}.
                 1. Issue the |initialization steps| on the [=Device timeline=] of |this|.
                 1. Return |t|.
             </div>
@@ -3919,14 +3921,17 @@ The {{GPUTextureUsage}} flags determine how a {{GPUTexture}} may be used after i
                 [=Device timeline=] |initialization steps|:
 
                 1. If any of the following conditions are unsatisfied
-                    [$generate a validation error$], make |t| [=invalid=], and stop.
+                    [$generate a validation error$], make |ti| [=invalid=], and stop.
 
                     <div class=validusage>
                         - [$validating GPUTextureDescriptor$](|this|, |descriptor|) returns `true`.
                     </div>
 
-                1. Set |t|.{{GPUTexture/[[size]]}} to |descriptor|.{{GPUTextureDescriptor/size}}.
-                1. Set |t|.{{GPUTexture/[[viewFormats]]}} to |descriptor|.{{GPUTextureDescriptor/viewFormats}}.
+                1. Create a device allocation for |ti| where each component of each texel is zero.
+
+                    If the allocation fails without side-effects,
+                    [$generate an out-of-memory error$],
+                    make |ti| [=invalid=], and return.
             </div>
         </div>
 </dl>

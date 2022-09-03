@@ -3170,7 +3170,7 @@ The {{GPUBufferUsage}} flags determine how a {{GPUBuffer}} may be used after its
 
                 [=Content timeline=] steps:
 
-                1. Let [|b|, |bi|] be [=!=] [$create a new WebGPU object$](|this|, {{GPUBuffer}}, |descriptor|).
+                1. Let [|b|, |internals|] be [=!=] [$create a new WebGPU object$](|this|, {{GPUBuffer}}, |descriptor|).
                 1. Set |b|.{{GPUBuffer/size}} to |descriptor|.{{GPUBufferDescriptor/size}}.
                 1. Set |b|.{{GPUBuffer/usage}} to |descriptor|.{{GPUBufferDescriptor/usage}}.
                 1. If |descriptor|.{{GPUBufferDescriptor/mappedAtCreation}} is `true`:
@@ -3184,7 +3184,7 @@ The {{GPUBufferUsage}} flags determine how a {{GPUBuffer}} may be used after its
                 [=Device timeline=] |initialization steps|:
 
                 1. If any of the following conditions are unsatisfied
-                    [$generate a validation error$], make |bi| [=invalid=], and stop.
+                    [$generate a validation error$], make |internals| [=invalid=], and stop.
 
                     <div class=validusage>
                         - |this| is [=valid=].
@@ -3206,17 +3206,17 @@ The {{GPUBufferUsage}} flags determine how a {{GPUBuffer}} may be used after its
                 and may be discarded or recycled.
 
                 1. If |descriptor|.{{GPUBufferDescriptor/mappedAtCreation}} is `true`:
-                    1. Set |bi|.[=buffer internals/state=] to "[=buffer internals/state/unavailable=]".
+                    1. Set |internals|.[=buffer internals/state=] to "[=buffer internals/state/unavailable=]".
 
                     Else:
 
-                    1. Set |bi|.[=buffer internals/state=] to "[=buffer internals/state/available=]".
+                    1. Set |internals|.[=buffer internals/state=] to "[=buffer internals/state/available=]".
 
-                1. Create a device allocation for |bi| where each byte is zero.
+                1. Create a device allocation for |internals| where each byte is zero.
 
                     If the allocation fails without side-effects,
                     [$generate an out-of-memory error$],
-                    make |bi| [=invalid=], and return.
+                    make |internals| [=invalid=], and return.
             </div>
         </div>
 </dl>
@@ -3674,12 +3674,12 @@ GPUTexture includes GPUObjectBase;
     ::
         The allowed usages for this {{GPUTexture}}.
 
-    : <dfn>\[[size]]</dfn>, of type {{GPUExtent3D}}
+    : <dfn>\[[size]]</dfn>, of type {{GPUExtent3D}}, immutable
     ::
         The size of the texture (same as the {{GPUTexture/width}}, {{GPUTexture/height}}, and
         {{GPUTexture/depthOrArrayLayers}} attributes).
 
-    : <dfn>\[[viewFormats]]</dfn>, of type sequence&lt;{{GPUTextureFormat}}&gt;
+    : <dfn>\[[viewFormats]]</dfn>, of type sequence&lt;{{GPUTextureFormat}}&gt;, immutable
     ::
         The set of {{GPUTextureFormat}}s that can be used {{GPUTextureViewDescriptor}}.{{GPUTextureViewDescriptor/format}}
         when creating views on this {{GPUTexture}}.
@@ -3692,7 +3692,7 @@ GPUTexture includes GPUObjectBase;
 extends [=internal object=] with the following [=device timeline slots=]:
 
 <dl dfn-type=dfn dfn-for="texture internals" data-timeline=device>
-    : <dfn>destroyed</dfn>, of type `boolean`, initially false
+    : <dfn>destroyed</dfn>, of type `boolean`, initially `false`
     ::
         If the texture is destroyed, it can no longer be used in any operation,
         and its underlying memory can be freed.
@@ -3907,7 +3907,7 @@ The {{GPUTextureUsage}} flags determine how a {{GPUTexture}} may be used after i
                     |descriptor|.{{GPUTextureDescriptor/format}} with |this|.{{GPUObjectBase/[[device]]}}.
                 1. [$Validate texture format required features$] of each element of
                     |descriptor|.{{GPUTextureDescriptor/viewFormats}} with |this|.{{GPUObjectBase/[[device]]}}.
-                1. Let [|t|, |ti|] be [=!=] [$create a new WebGPU object$](|this|, {{GPUTexture}}, |descriptor|).
+                1. Let [|t|, |internals|] be [=!=] [$create a new WebGPU object$](|this|, {{GPUTexture}}, |descriptor|).
                 1. Set |t|.{{GPUTexture/width}} to |descriptor|.{{GPUTextureDescriptor/size}}.[=Extent3D/width=].
                 1. Set |t|.{{GPUTexture/height}} to |descriptor|.{{GPUTextureDescriptor/size}}.[=Extent3D/height=].
                 1. Set |t|.{{GPUTexture/depthOrArrayLayers}} to |descriptor|.{{GPUTextureDescriptor/size}}.[=Extent3D/depthOrArrayLayers=].
@@ -3916,8 +3916,8 @@ The {{GPUTextureUsage}} flags determine how a {{GPUTexture}} may be used after i
                 1. Set |t|.{{GPUTexture/dimension}} to |descriptor|.{{GPUTextureDescriptor/dimension}}.
                 1. Set |t|.{{GPUTexture/format}} to |descriptor|.{{GPUTextureDescriptor/format}}.
                 1. Set |t|.{{GPUTexture/usage}} to |descriptor|.{{GPUTextureDescriptor/usage}}.
-                1. Set |t|.{{GPUTexture/[[size]]}} to |descriptor|.{{GPUTextureDescriptor/size}}.
-                1. Set |t|.{{GPUTexture/[[viewFormats]]}} to |descriptor|.{{GPUTextureDescriptor/viewFormats}}.
+                1. Set {{GPUTexture/[[size]]}} to |descriptor|.{{GPUTextureDescriptor/size}}.
+                1. Set {{GPUTexture/[[viewFormats]]}} to |descriptor|.{{GPUTextureDescriptor/viewFormats}}.
                 1. Issue the |initialization steps| on the [=Device timeline=] of |this|.
                 1. Return |t|.
             </div>
@@ -3925,17 +3925,17 @@ The {{GPUTextureUsage}} flags determine how a {{GPUTexture}} may be used after i
                 [=Device timeline=] |initialization steps|:
 
                 1. If any of the following conditions are unsatisfied
-                    [$generate a validation error$], make |ti| [=invalid=], and stop.
+                    [$generate a validation error$], make |internals| [=invalid=], and stop.
 
                     <div class=validusage>
                         - [$validating GPUTextureDescriptor$](|this|, |descriptor|) returns `true`.
                     </div>
 
-                1. Create a device allocation for |ti| where each component of each texel is zero.
+                1. Create a device allocation for |internals| where each component of each texel is zero.
 
                     If the allocation fails without side-effects,
                     [$generate an out-of-memory error$],
-                    make |ti| [=invalid=], and return.
+                    make |internals| [=invalid=], and return.
             </div>
         </div>
 </dl>
@@ -4060,9 +4060,9 @@ interface GPUTextureView {
 GPUTextureView includes GPUObjectBase;
 </script>
 
-{{GPUTextureView}} has the following internal slots:
+{{GPUTextureView}} has the following [=immutable properties=]:
 
-<dl dfn-type=attribute dfn-for=GPUTextureView>
+<dl dfn-type=attribute dfn-for=GPUTextureView data-timeline=const>
     : <dfn>\[[texture]]</dfn>
     ::
         The {{GPUTexture}} into which this is a view.
@@ -4072,7 +4072,16 @@ GPUTextureView includes GPUObjectBase;
         The {{GPUTextureViewDescriptor}} describing this texture view.
 
         All optional fields of {{GPUTextureViewDescriptor}} are defined.
-    : <dfn>\[[renderExtent]]</dfn>
+
+    : <dfn>\[[internals]]</dfn>, of type [=texture view internals=], readonly, {{GPUObjectBase/[[internals]]|override}}
+    ::
+</dl>
+
+{{GPUTextureView}}'s [=internal object=] is <dfn dfn>texture view internals</dfn>, which
+extends [=internal object=] with the following [=device timeline slots=]:
+
+<dl dfn-type=dfn dfn-for="texture view internals" data-timeline=device>
+    : <dfn>renderExtent</dfn>
     ::
         For renderable views, this is the effective {{GPUExtent3DDict}} for rendering.
 
@@ -4265,7 +4274,9 @@ enum GPUTextureAspect {
 
                 1. [$Validate texture format required features$] of
                     |descriptor|.{{GPUTextureViewDescriptor/format}} with |this|.{{GPUObjectBase/[[device]]}}.
-                1. Let |view| be a new {{GPUTextureView}} object.
+                1. Let [|view|, |internals|] be [=!=] [$create a new WebGPU object$](|this|, {{GPUSampler}}, |descriptor|).
+                1. Set |view|.{{GPUTextureView/[[texture]]}} to |this|.
+                1. Set |view|.{{GPUTextureView/[[descriptor]]}} to |descriptor|.
                 1. Issue the |initialization steps| on the [=Device timeline=] of |this|.
                 1. Return |view|.
             </div>
@@ -4338,12 +4349,9 @@ enum GPUTextureAspect {
                             </dl>
                     </div>
 
-                1. Let |view| be a new {{GPUTextureView}} object.
-                1. Set |view|.{{GPUTextureView/[[texture]]}} to |this|.
-                1. Set |view|.{{GPUTextureView/[[descriptor]]}} to |descriptor|.
                 1. If |this|.{{GPUTexture/usage}} contains {{GPUTextureUsage/RENDER_ATTACHMENT}}:
                     1. Let |renderExtent| be [$compute render extent$](|this|.{{GPUTexture/[[size]]}}, |descriptor|.{{GPUTextureViewDescriptor/baseMipLevel}}).
-                    1. Set |view|.{{GPUTextureView/[[renderExtent]]}} to |renderExtent|.
+                    1. Set |internals|.[=texture view internals/renderExtent=] to |renderExtent|.
             </div>
         </div>
 </dl>
@@ -4912,18 +4920,26 @@ interface GPUSampler {
 GPUSampler includes GPUObjectBase;
 </script>
 
-{{GPUSampler}} has the following internal slots:
+{{GPUSampler}} has the following [=immutable properties=]:
 
-<dl dfn-type=attribute dfn-for=GPUSampler>
+<dl dfn-type=attribute dfn-for=GPUSampler data-timeline=const>
     : <dfn>\[[descriptor]]</dfn>, of type {{GPUSamplerDescriptor}}, readonly
     ::
         The {{GPUSamplerDescriptor}} with which the {{GPUSampler}} was created.
 
-    : <dfn>\[[isComparison]]</dfn>, of type {{boolean}}
+    : <dfn>\[[internals]]</dfn>, of type [=sampler internals=], readonly, {{GPUObjectBase/[[internals]]|override}}
+    ::
+</dl>
+
+{{GPUSampler}}'s [=internal object=] is <dfn dfn>sampler internals</dfn>, which
+extends [=internal object=] with the following [=device timeline slots=]:
+
+<dl dfn-type=dfn dfn-for="sampler internals" data-timeline=device>
+    : <dfn>isComparison</dfn>, of type {{boolean}}, immutable
     ::
         Whether the {{GPUSampler}} is used as a comparison sampler.
 
-    : <dfn>\[[isFiltering]]</dfn>, of type {{boolean}}
+    : <dfn>isFiltering</dfn>, of type {{boolean}}, immutable
     ::
         Whether the {{GPUSampler}} weights multiple samples of a texture.
 </dl>
@@ -4948,6 +4964,8 @@ dictionary GPUSamplerDescriptor : GPUObjectDescriptorBase {
     [Clamp] unsigned short maxAnisotropy = 1;
 };
 </script>
+
+{{GPUSamplerDescriptor}} has the following members:
 
 <dl dfn-type=dict-member dfn-for=GPUSamplerDescriptor>
     : <dfn>addressModeU</dfn>
@@ -5122,7 +5140,8 @@ enum GPUCompareFunction {
 
                 [=Content timeline=] steps:
 
-                1. Let |s| be a new {{GPUSampler}} object.
+                1. Let [|s|, |internals|] be [=!=] [$create a new WebGPU object$](|this|, {{GPUSampler}}, |descriptor|).
+                1. Set |s|.{{GPUSampler/[[descriptor]]}} to |descriptor|.
                 1. Issue the |initialization steps| on the [=Device timeline=] of |this|.
                 1. Return |s|.
             </div>
@@ -5150,10 +5169,9 @@ enum GPUCompareFunction {
                                 and |descriptor|.{{GPUSamplerDescriptor/mipmapFilter}} must be
                                 {{GPUMipmapFilterMode/"linear"}}.
                     </div>
-                1. Set |s|.{{GPUSampler/[[descriptor]]}} to |descriptor|.
-                1. Set |s|.{{GPUSampler/[[isComparison]]}} to `false` if the {{GPUSamplerDescriptor/compare}} attribute
-                        of |s|.{{GPUSampler/[[descriptor]]}} is `null` or undefined. Otherwise, set it to `true`.
-                1. Set |s|.{{GPUSampler/[[isFiltering]]}} to `false` if none of {{GPUSamplerDescriptor/minFilter}},
+                1. Set |internals|.[=sampler internals/isComparison=] to `false` if the {{GPUSamplerDescriptor/compare}} attribute
+                        of |descriptor| is `null` or undefined. Otherwise, set it to `true`.
+                1. Set |internals|.[=sampler internals/isFiltering=] to `false` if none of {{GPUSamplerDescriptor/minFilter}},
                     {{GPUSamplerDescriptor/magFilter}}, or {{GPUSamplerDescriptor/mipmapFilter}} has the value of
                     {{GPUFilterMode/"linear"}}. Otherwise, set it to `true`.
             </div>
@@ -5187,11 +5205,36 @@ interface GPUBindGroupLayout {
 GPUBindGroupLayout includes GPUObjectBase;
 </script>
 
-{{GPUBindGroupLayout}} has the following internal slots:
+{{GPUBindGroupLayout}} has the following [=immutable properties=]:
 
-<dl dfn-type=attribute dfn-for=GPUBindGroupLayout>
-    : <dfn>\[[descriptor]]</dfn>
+<dl dfn-type=attribute dfn-for=GPUBindGroupLayout data-timeline=const>
+    : <dfn>\[[internals]]</dfn>, of type [=bind group layout internals=], readonly, {{GPUObjectBase/[[internals]]|override}}
     ::
+</dl>
+
+{{GPUBindGroupLayout}}'s [=internal object=] is <dfn dfn>bind group layout internals</dfn>, which
+extends [=internal object=] with the following [=device timeline slots=]:
+
+<dl dfn-type=dfn dfn-for="bind group layout internals" data-timeline=device>
+    : <dfn>descriptor</dfn>
+    ::
+        <!-- TODO: possibly unused, can be replaced with entryMap? -->
+
+    : <dfn>entryMap</dfn>, of type [=ordered map=]&lt;{{GPUSize32}}, {{GPUBindGroupLayoutEntry}}&gt;
+    ::
+        The map of binding indices pointing to the {{GPUBindGroupLayoutEntry}}s,
+        which this {{GPUBindGroupLayout}} describes.
+
+    : <dfn>dynamicOffsetCount</dfn>, of type {{GPUSize32}}
+    ::
+        The number of buffer bindings with dynamic offsets in this {{GPUBindGroupLayout}}.
+
+    : <dfn>exclusivePipeline</dfn>, of type {{GPUPipelineBase}}?, initially `null`
+    ::
+        The pipeline that created this {{GPUBindGroupLayout}}, if it was created as part of a
+        [[#default-pipeline-layout|default pipeline layout]]. If not `null`, {{GPUBindGroup}}s
+        created with this {{GPUBindGroupLayout}} can only be used with the specified
+        {{GPUPipelineBase}}.
 </dl>
 
 ### Bind Group Layout Creation ### {#bind-group-layout-creation}
@@ -5539,26 +5582,6 @@ dictionary GPUExternalTextureBindingLayout {
 };
 </script>
 
-A {{GPUBindGroupLayout}} object has the following internal slots:
-
-<dl dfn-type=attribute dfn-for=GPUBindGroupLayout>
-    : <dfn>\[[entryMap]]</dfn>, of type [=ordered map=]&lt;{{GPUSize32}}, {{GPUBindGroupLayoutEntry}}&gt
-    ::
-        The map of binding indices pointing to the {{GPUBindGroupLayoutEntry}}s,
-        which this {{GPUBindGroupLayout}} describes.
-
-    : <dfn>\[[dynamicOffsetCount]]</dfn>, of type {{GPUSize32}}
-    ::
-        The number of buffer bindings with dynamic offsets in this {{GPUBindGroupLayout}}.
-
-    : <dfn>\[[exclusivePipeline]]</dfn>, of type {{GPUPipelineBase}}?, initially `null`
-    ::
-        The pipeline that created this {{GPUBindGroupLayout}}, if it was created as part of a
-        [[#default-pipeline-layout|default pipeline layout]]. If not `null`, {{GPUBindGroup}}s
-        created with this {{GPUBindGroupLayout}} can only be used with the specified
-        {{GPUPipelineBase}}.
-</dl>
-
 <dl dfn-type=method dfn-for=GPUDevice>
     : <dfn>createBindGroupLayout(descriptor)</dfn>
     ::
@@ -5583,7 +5606,7 @@ A {{GPUBindGroupLayout}} object has the following internal slots:
                         1. [$Validate texture format required features$] for
                             |entry|.{{GPUBindGroupLayoutEntry/storageTexture}}.{{GPUStorageTextureBindingLayout/format}}
                             with |this|.{{GPUObjectBase/[[device]]}}.
-                1. Let |layout| be a new {{GPUBindGroupLayout}} object.
+                1. Let [|layout|, |internals|] be [=!=] [$create a new WebGPU object$](|this|, {{GPUBindGroupLayout}}, |descriptor|).
                 1. Issue the |initialization steps| on the [=Device timeline=] of |this|.
                 1. Return |layout|.
             </div>
@@ -5631,13 +5654,13 @@ A {{GPUBindGroupLayout}} object has the following internal slots:
                                     which can support storage usage.
                     </div>
 
-                1. Set |layout|.{{GPUBindGroupLayout/[[descriptor]]}} to |descriptor|.
-                1. Set |layout|.{{GPUBindGroupLayout/[[dynamicOffsetCount]]}} to the number of
+                1. Set |internals|.[=bind group layout internals/descriptor=] to |descriptor|.
+                1. Set |internals|.[=bind group layout internals/dynamicOffsetCount=] to the number of
                     entries in |descriptor| where {{GPUBindGroupLayoutEntry/buffer}} is not `undefined` and
                     {{GPUBindGroupLayoutEntry/buffer}}.{{GPUBufferBindingLayout/hasDynamicOffset}} is `true`.
                 1. For each {{GPUBindGroupLayoutEntry}} |entry| in
                     |descriptor|.{{GPUBindGroupLayoutDescriptor/entries}}:
-                    1. Insert |entry| into |layout|.{{GPUBindGroupLayout/[[entryMap]]}}
+                    1. Insert |entry| into |internals|.[=bind group layout internals/entryMap=]
                         with the key of |entry|.{{GPUBindGroupLayoutEntry/binding}}.
             </div>
         </div>
@@ -5648,10 +5671,12 @@ A {{GPUBindGroupLayout}} object has the following internal slots:
 <div algorithm>
 Two {{GPUBindGroupLayout}} objects |a| and |b| are considered <dfn dfn>group-equivalent</dfn>
 if and only if all of the following conditions are satisfied:
-    - |a|.{{GPUBindGroupLayout/[[exclusivePipeline]]}} == |b|.{{GPUBindGroupLayout/[[exclusivePipeline]]}}.
+    - |a|.{{GPUBindGroupLayout/[[internals]]}}.[=bind group layout internals/exclusivePipeline=] == |b|.{{GPUBindGroupLayout/[[internals]]}}.[=bind group layout internals/exclusivePipeline=].
     - for any binding number |binding|, one of the following conditions is satisfied:
-        - it's missing from both |a|.{{GPUBindGroupLayout/[[entryMap]]}} and |b|.{{GPUBindGroupLayout/[[entryMap]]}}.
-        - |a|.{{GPUBindGroupLayout/[[entryMap]]}}[|binding|] == |b|.{{GPUBindGroupLayout/[[entryMap]]}}[|binding|]
+        - it's missing from both |a|.{{GPUBindGroupLayout/[[internals]]}}.[=bind group layout internals/entryMap=]
+            and |b|.{{GPUBindGroupLayout/[[internals]]}}.[=bind group layout internals/entryMap=].
+        - |a|.{{GPUBindGroupLayout/[[internals]]}}.[=bind group layout internals/entryMap=][|binding|] ==
+            |b|.{{GPUBindGroupLayout/[[internals]]}}.[=bind group layout internals/entryMap=][|binding|]
 </div>
 
 If bind groups layouts are [=group-equivalent=] they can be interchangeably used in all contents.
@@ -5668,9 +5693,9 @@ interface GPUBindGroup {
 GPUBindGroup includes GPUObjectBase;
 </script>
 
-A {{GPUBindGroup}} object has the following internal slots:
+{{GPUBindGroup}} has the following [=immutable properties=]:
 
-<dl dfn-type=attribute dfn-for=GPUBindGroup>
+<dl dfn-type=attribute dfn-for=GPUBindGroup data-timeline=const>
     : <dfn>\[[layout]]</dfn>, of type {{GPUBindGroupLayout}}, readonly
     ::
         The {{GPUBindGroupLayout}} associated with this {{GPUBindGroup}}.
@@ -5679,7 +5704,15 @@ A {{GPUBindGroup}} object has the following internal slots:
     ::
         The set of {{GPUBindGroupEntry}}s this {{GPUBindGroup}} describes.
 
-    : <dfn>\[[usedResources]]</dfn>, of type [=ordered map=]&lt;[=subresource=], [=list=]&lt;[=internal usage=]&gt;&gt;, readonly
+    : <dfn>\[[internals]]</dfn>, of type [=bind group internals=], readonly, {{GPUObjectBase/[[internals]]|override}}
+    ::
+</dl>
+
+{{GPUBindGroup}}'s [=internal object=] is <dfn dfn>bind group internals</dfn>, which
+extends [=internal object=] with the following [=device timeline slots=]:
+
+<dl dfn-type=dfn dfn-for="bind group internals" data-timeline=device>
+    : <dfn>usedResources</dfn>, of type [=ordered map=]&lt;[=subresource=], [=list=]&lt;[=internal usage=]&gt;&gt;, readonly
     ::
         The set of buffer and texture [=subresource=]s used by this bind group,
         associated with lists of the [=internal usage=] flags.
@@ -5780,7 +5813,7 @@ following members:
 
                 [=Content timeline=] steps:
 
-                1. Let |bindGroup| be a new {{GPUBindGroup}} object.
+                1. Let [|bindGroup|, |internals|] be [=!=] [$create a new WebGPU object$](|this|, {{GPUBindGroup}}, |descriptor|).
                 1. Issue the |initialization steps| on the [=Device timeline=] of |this|.
                 1. Return |bindGroup|.
             </div>
@@ -5816,15 +5849,15 @@ following members:
 
                                             <dl class=switch>
                                                 : {{GPUSamplerBindingType/"filtering"}}
-                                                :: |resource|.{{GPUSampler/[[isComparison]]}} is `false`.
+                                                :: |resource|.{{GPUSampler/[[internals]]}}.[=sampler internals/isComparison=] is `false`.
 
                                                 : {{GPUSamplerBindingType/"non-filtering"}}
                                                 ::
-                                                    |resource|.{{GPUSampler/[[isFiltering]]}} is `false`.
-                                                    |resource|.{{GPUSampler/[[isComparison]]}} is `false`.
+                                                    |resource|.{{GPUSampler/[[internals]]}}.[=sampler internals/isFiltering=] is `false`.
+                                                    |resource|.{{GPUSampler/[[internals]]}}.[=sampler internals/isComparison=] is `false`.
 
                                                 : {{GPUSamplerBindingType/"comparison"}}
-                                                :: |resource|.{{GPUSampler/[[isComparison]]}} is `true`.
+                                                :: |resource|.{{GPUSampler/[[internals]]}}.[=sampler internals/isComparison=] is `true`.
                                             </dl>
 
                                     : {{GPUBindGroupLayoutEntry/texture}}
@@ -5893,16 +5926,16 @@ following members:
                                 </dl>
                     </div>
 
-                1. Let |bindGroup|.{{GPUBindGroup/[[layout]]}} =
+                1. Set |bindGroup|.{{GPUBindGroup/[[layout]]}} =
                     |descriptor|.{{GPUBindGroupDescriptor/layout}}.
-                1. Let |bindGroup|.{{GPUBindGroup/[[entries]]}} =
+                1. Set |bindGroup|.{{GPUBindGroup/[[entries]]}} =
                     |descriptor|.{{GPUBindGroupDescriptor/entries}}.
-                1. Let |bindGroup|.{{GPUBindGroup/[[usedResources]]}} = {}.
+                1. Set |internals|.[=bind group internals/usedResources=] = {}.
 
                 1. For each {{GPUBindGroupEntry}} |bindingDescriptor| in
                     |descriptor|.{{GPUBindGroupDescriptor/entries}}:
                     1. Let |internalUsage| be the [=binding usage=] for |layoutBinding|.
-                    1. Each [=subresource=] seen by |resource| is added to {{GPUBindGroup/[[usedResources]]}} as |internalUsage|.
+                    1. Each [=subresource=] seen by |resource| is added to {{GPUBindGroup/[[internals]]}}.[=bind group internals/usedResources=] as |internalUsage|.
             </div>
         </div>
 </dl>
@@ -6021,14 +6054,15 @@ pipeline, and have the following members:
 
                 1. Let |limits| be |this|.{{GPUObjectBase/[[device]]}}.{{device/[[limits]]}}.
                 1. Let |allEntries| be the result of concatenating
-                    |bgl|.{{GPUBindGroupLayout/[[descriptor]]}}.{{GPUBindGroupLayoutDescriptor/entries}}
+                    |bgl|.{{GPUBindGroupLayout/[[internals]]}}.[=bind group layout internals/descriptor=].{{GPUBindGroupLayoutDescriptor/entries}}
                     for all |bgl| in |descriptor|.{{GPUPipelineLayoutDescriptor/bindGroupLayouts}}.
                 1. If any of the following conditions are unsatisfied
                     [$generate a validation error$], make |pl| [=invalid=], and stop.
 
                     <div class=validusage>
                         - Every {{GPUBindGroupLayout}} in |descriptor|.{{GPUPipelineLayoutDescriptor/bindGroupLayouts}}
-                            must be [$valid to use with$] |this| and have a {{GPUBindGroupLayout/[[exclusivePipeline]]}}
+                            must be [$valid to use with$] |this| and have a
+                            {{GPUBindGroupLayout/[[internals]]}}.[=bind group layout internals/exclusivePipeline=]
                             of `null`.
                         - The [=list/size=] of |descriptor|.{{GPUPipelineLayoutDescriptor/bindGroupLayouts}}
                             must be &le; |limits|.{{supported limits/maxBindGroups}}.
@@ -6625,13 +6659,14 @@ run the following steps:
     1. Let |groupLayouts| be a new sequence.
     1. For each |groupDesc| in |groupDescs|:
 
-        1. Let |bindGroupLayout| be the result of calling |device|.{{GPUDevice/createBindGroupLayout()}}(|groupDesc|).
-        1. Set |bindGroupLayout|.{{GPUBindGroupLayout/[[exclusivePipeline]]}} to |pipeline|.
+        1. Let |bindGroupLayout| be the result of calling
+            |device|.{{GPUDevice/createBindGroupLayout()|createBindGroupLayout}}(|groupDesc|).
+        1. Set |bindGroupLayout|.{{GPUBindGroupLayout/[[internals]]}}.[=bind group layout internals/exclusivePipeline=] to |pipeline|.
         1. Append |bindGroupLayout| to |groupLayouts|.
 
     1. Let |desc| be a new {{GPUPipelineLayoutDescriptor}}.
     1. Set |desc|.{{GPUPipelineLayoutDescriptor/bindGroupLayouts}} to |groupLayouts|.
-    1. Return |device|.{{GPUDevice/createPipelineLayout()}}(|desc|).
+    1. Return |device|.{{GPUDevice/createPipelineLayout()|createPipelineLayout}}(|desc|).
 
     Issue: This fills the pipeline layout with empty bindgroups. Revisit once the behavior of empty bindgroups is specified.
 </div>
@@ -9746,7 +9781,7 @@ It must only be included by interfaces which also include those mixins.
                         - |bindGroup| is [$valid to use with$] |this|.
                         - |index| &lt; |this|.{{GPUObjectBase/[[device]]}}.{{device/[[limits]]}}.{{supported limits/maxBindGroups}}.
                         - |dynamicOffsets|.length is
-                            |bindGroup|.{{GPUBindGroup/[[layout]]}}.{{GPUBindGroupLayout/[[dynamicOffsetCount]]}}.
+                            |bindGroup|.{{GPUBindGroup/[[layout]]}}.{{GPUBindGroupLayout/[[internals]]}}.[=bind group layout internals/dynamicOffsetCount=].
 
                         - [$Iterate over each dynamic binding offset$] in |bindGroup| and
                             run the following steps for each |bufferBinding|, |bufferLayout|,
@@ -9820,7 +9855,7 @@ It must only be included by interfaces which also include those mixins.
     1. Let |layout| be |bindGroup|.{{GPUBindGroup/[[layout]]}}.
     1. For each {{GPUBindGroupEntry}} |entry| in |bindGroup|.{{GPUBindGroup/[[entries]]}} ordered in increasing values of |entry|.{{GPUBindGroupEntry/binding}}:
         1. Let |bindingDescriptor| be the {{GPUBindGroupLayoutEntry}} at
-            |layout|.{{GPUBindGroupLayout/[[entryMap]]}}[|entry|.{{GPUBindGroupEntry/binding}}]:
+            |layout|.{{GPUBindGroupLayout/[[internals]]}}.[=bind group layout internals/entryMap=][|entry|.{{GPUBindGroupEntry/binding}}]:
         1. If |bindingDescriptor|.{{GPUBindGroupLayoutEntry/buffer}} is not `undefined` and
             |bindingDescriptor|.{{GPUBindGroupLayoutEntry/buffer}}.{{GPUBufferBindingLayout/hasDynamicOffset}} is `true`:
             1. Let |bufferBinding| be |entry|.{{GPUBindGroupEntry/resource}}.
@@ -9886,7 +9921,7 @@ It must only be included by interfaces which also include those mixins.
             1. Let |bindGroupEntries| be
                 |encoder|.{{GPUBindingCommandsMixin/[[bind_groups]]}}[|index|].{{GPUBindGroupDescriptor/entries}}.
             1. Let |bindGroupLayoutEntries| be
-                |bindGroupLayout|.{{GPUBindGroupLayout/[[descriptor]]}}.{{GPUBindGroupLayoutDescriptor/entries}}.
+                |bindGroupLayout|.{{GPUBindGroupLayout/[[internals]]}}.[=bind group layout internals/descriptor=].{{GPUBindGroupLayoutDescriptor/entries}}.
             1. For each {{GPUBindGroupEntry}} |bindGroupLayoutEntry| in |bindGroupLayoutEntries|
                 for which |bindGroupLayoutEntry|.{{GPUBindGroupLayoutEntry/visibility}} contains |stage|:
                 1. Let |bindGroupEntry| be the {{GPUBindGroupEntry}} in |bindGroupEntries| for which
@@ -10491,7 +10526,7 @@ dictionary GPURenderPassDescriptor : GPUObjectDescriptorBase {
 
     1. For each {{GPURenderPassColorAttachment/view}} in non-`null` members of |this|.{{GPURenderPassDescriptor/colorAttachments}}
         and |this|.{{GPURenderPassDescriptor/depthStencilAttachment}}.{{GPURenderPassDepthStencilAttachment/view}},
-        if present, the {{GPUTextureView/[[renderExtent]]}} must match.
+        if present, the {{GPUTextureView/[[internals]]}}.[=texture view internals/renderExtent=] must match.
 
     1. If |this|.{{GPURenderPassDescriptor/occlusionQuerySet}} is not `null`:
 
@@ -10515,7 +10550,7 @@ dictionary GPURenderPassDescriptor : GPUObjectDescriptorBase {
     For a given {{GPURenderPassDescriptor}} value |descriptor|, the syntax:
 
     - |descriptor|.<dfn dfn>renderExtent</dfn> refers to
-        {{GPUTextureView/[[renderExtent]]}} of any {{GPUTextureView/[[descriptor]]}}
+        {{GPUTextureView/[[internals]]}}.[=texture view internals/renderExtent=] of any {{GPUTextureView/[[descriptor]]}}
         in either |descriptor|.{{GPURenderPassDescriptor/depthStencilAttachment}}.{{GPURenderPassDepthStencilAttachment/view}},
         or any of the {{GPURenderPassColorAttachment/view}} in |descriptor|.{{GPURenderPassDescriptor/colorAttachments}}.
 

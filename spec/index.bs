@@ -13156,7 +13156,7 @@ interface GPUQueue {
 
     undefined copyExternalImageToTexture(
         GPUImageCopyExternalImage source,
-        GPUImageCopyTextureTagged destination,
+        GPUCopyExternalImageDestination destination,
         GPUExtent3D copySize);
 };
 GPUQueue includes GPUObjectBase;
@@ -13318,7 +13318,7 @@ GPUQueue includes GPUObjectBase;
         into the destination texture.
 
         This operation performs [[#color-space-conversions|color encoding]] into the destination
-        encoding according to the parameters of {{GPUImageCopyTextureTagged}}.
+        encoding according to the parameters of {{GPUCopyExternalImageDestination}}.
 
         Copying into a `-srgb` texture results in the same texture bytes, not the same decoded
         values, as copying into the corresponding non-`-srgb` format.
@@ -13433,8 +13433,8 @@ GPUQueue includes GPUObjectBase;
                             (|srcOrigin|.[=GPUOrigin2D/x=] &plus; |x|, |srcOrigin|.[=GPUOrigin2D/y=] &plus; |srcY|) of
                             |source|.{{GPUImageCopyExternalImage/source}} after applying any
                             [[#color-space-conversions|color encoding]] required by
-                            |destination|.{{GPUImageCopyTextureTagged/colorSpace}} and
-                            |destination|.{{GPUImageCopyTextureTagged/premultipliedAlpha}}.
+                            |destination|.{{GPUCopyExternalImageDestination/colorSpace}} and
+                            |destination|.{{GPUCopyExternalImageDestination/premultipliedAlpha}}.
             </div>
         </div>
 

@@ -2094,7 +2094,7 @@ implementations **should** elide it, for performance.
 
 For optimal performance, applications **should** set their color space and encoding
 options so that the number of necessary conversions is minimized throughout the process.
-For various image sources of {{GPUImageCopyExternalImage}}:
+For various image sources of {{GPUCopyExternalImageSource}}:
 
 - {{ImageBitmap}}:
     - Premultiplication is controlled via {{ImageBitmapOptions/premultiplyAlpha}}.
@@ -13155,7 +13155,7 @@ interface GPUQueue {
         GPUExtent3D size);
 
     undefined copyExternalImageToTexture(
-        GPUImageCopyExternalImage source,
+        GPUCopyExternalImageSource source,
         GPUCopyExternalImageDestination destination,
         GPUExtent3D copySize);
 };
@@ -13358,10 +13358,10 @@ GPUQueue includes GPUObjectBase;
 
                 [=Content timeline=] steps:
 
-                1. [=?=] [$validate GPUOrigin2D shape$](|source|.{{GPUImageCopyExternalImage/origin}}).
+                1. [=?=] [$validate GPUOrigin2D shape$](|source|.{{GPUCopyExternalImageSource/origin}}).
                 1. [=?=] [$validate GPUOrigin3D shape$](|destination|.{{GPUTexelCopyTextureData/origin}}).
                 1. [=?=] [$validate GPUExtent3D shape$](|copySize|).
-                1. Let |sourceImage| be |source|.{{GPUImageCopyExternalImage/source}}
+                1. Let |sourceImage| be |source|.{{GPUCopyExternalImageSource/source}}
                 1. If |sourceImage| <l spec=html>[=is not origin-clean=]</l>,
                     throw a {{SecurityError}} and stop.
                 1. If any of the following requirements are unmet, throw an {{OperationError}} and stop.
@@ -13419,19 +13419,19 @@ GPUQueue includes GPUObjectBase;
                     the [=texel block height=] of |destination|.{{GPUTexelCopyTextureData/texture}} is 1, and that
                     |copySize|.[=GPUExtent3D/depthOrArrayLayers=] is 1.
 
-                1. Let |srcOrigin| be |source|.{{GPUImageCopyExternalImage/origin}}.
+                1. Let |srcOrigin| be |source|.{{GPUCopyExternalImageSource/origin}}.
                 1. Let |dstOrigin| be |destination|.{{GPUTexelCopyTextureData/origin}}.
                 1. Let |dstSubregion| be [$texture copy sub-region$] (|dstOrigin|.[=GPUOrigin3D/z=]) of |destination|.
 
                 1. For each |y| in the range [0, |copySize|.[=GPUExtent3D/height=] &minus; 1]:
-                    1. Let |srcY| be |y| if |source|.{{GPUImageCopyExternalImage/flipY}} is `false` and
+                    1. Let |srcY| be |y| if |source|.{{GPUCopyExternalImageSource/flipY}} is `false` and
                         (|copySize|.[=GPUExtent3D/height=] &minus; 1 &minus; |y|) otherwise.
                     1. For each |x| in the range [0, |copySize|.[=GPUExtent3D/width=] &minus; 1]:
                         1. Set [=texel block=]
                             (|dstOrigin|.[=GPUOrigin3D/x=] &plus; |x|, |dstOrigin|.[=GPUOrigin3D/y=] &plus; |y|) of
                             |dstSubregion| to be an [=equivalent texel representation=] of the pixel at
                             (|srcOrigin|.[=GPUOrigin2D/x=] &plus; |x|, |srcOrigin|.[=GPUOrigin2D/y=] &plus; |srcY|) of
-                            |source|.{{GPUImageCopyExternalImage/source}} after applying any
+                            |source|.{{GPUCopyExternalImageSource/source}} after applying any
                             [[#color-space-conversions|color encoding]] required by
                             |destination|.{{GPUCopyExternalImageDestination/colorSpace}} and
                             |destination|.{{GPUCopyExternalImageDestination/premultipliedAlpha}}.

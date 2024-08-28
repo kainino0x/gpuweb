@@ -323,7 +323,7 @@ dictionary GPUCopyExternalImageDestination
         Describes whether the data written into the texture should have its RGB channels
         premultiplied by the alpha channel, or not.
 
-        If this option is set to `true` and the {{GPUImageCopyExternalImage/source}} is also
+        If this option is set to `true` and the {{GPUCopyExternalImageSource/source}} is also
         premultiplied, the source RGB values must be preserved even if they exceed their
         corresponding alpha values.
 
@@ -332,7 +332,7 @@ dictionary GPUCopyExternalImageDestination
         conversion may not be necessary. See [[#color-space-conversion-elision]].
 </dl>
 
-<h4 id=gpuimagecopyexternalimage data-dfn-type=dictionary>`GPUImageCopyExternalImage`
+<h4 id=gpuimagecopyexternalimage data-dfn-type=dictionary>`GPUCopyExternalImageSource`
 <span id=gpu-image-copy-external-image></span>
 </h4>
 
@@ -345,16 +345,16 @@ typedef (ImageBitmap or
          HTMLCanvasElement or
          OffscreenCanvas) GPUImageCopyExternalImageSource;
 
-dictionary GPUImageCopyExternalImage {
+dictionary GPUCopyExternalImageSource {
     required GPUImageCopyExternalImageSource source;
     GPUOrigin2D origin = {};
     boolean flipY = false;
 };
 </script>
 
-{{GPUImageCopyExternalImage}} has the following members:
+{{GPUCopyExternalImageSource}} has the following members:
 
-<dl dfn-type=dict-member dfn-for=GPUImageCopyExternalImage>
+<dl dfn-type=dict-member dfn-for=GPUCopyExternalImageSource>
     : <dfn>source</dfn>
     ::
         The source of the [=image copy=]. The copy source data is captured at the moment that
@@ -372,7 +372,7 @@ dictionary GPUImageCopyExternalImage {
 
         If this option is set to `true`, the copy is flipped vertically: the bottom row of the source
         region is copied into the first row of the destination region, and so on.
-        The {{GPUImageCopyExternalImage/origin}} option is still relative to the top-left corner
+        The {{GPUCopyExternalImageSource/origin}} option is still relative to the top-left corner
         of the source image, increasing downward.
 </dl>
 

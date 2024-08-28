@@ -13,9 +13,11 @@ and "immediate" {{GPUQueue}} operations:
 
 - {{GPUQueue/writeBuffer()}}, for {{ArrayBuffer}}-to-{{GPUBuffer}} writes
 
-## Image Copies ## {#image-copies}
+<h3 id=texel-copies>Texel Copies
+<span id=image-copies></span>
+</h3>
 
-<dfn dfn>Image copy</dfn> operations operate on texture/"image" data, rather than bytes.
+<dfn dfn>Texel copy</dfn> operations operate on texture/"image" data, rather than bytes.
 
 WebGPU provides "buffered" {{GPUCommandEncoder}} commands:
 
@@ -34,8 +36,9 @@ Copy commands are not guaranteed to preserve the source's bit-representation.
 
 The following definitions are used by these methods:
 
-<h4 id=gpuimagedatalayout data-dfn-type=dictionary>`GPUTexelCopyBufferLayout`
+<h4 id=gputexelcopybufferlayout data-dfn-type=dictionary>`GPUTexelCopyBufferLayout`
 <span id=gpu-image-data-layout></span>
+<span id=gpuimagedatalayout></span>
 </h4>
 
 <script type=idl>
@@ -63,8 +66,8 @@ write into a [=texture=] from the {{GPUQueue}}.
 Operations that copy between byte arrays and textures always operate on whole [=texel block=].
 It's not possible to update only a part of a [=texel block=].
 
-[=Texel blocks=] are tightly packed within each [=texel block row=] in the linear memory layout of an
-image copy, with each subsequent [=texel block=] immediately following the previous [=texel block=],
+[=Texel blocks=] are tightly packed within each [=texel block row=] in the linear memory layout of a
+[=texel copy=], with each subsequent [=texel block=] immediately following the previous [=texel block=],
 with no padding.
 This includes [[#copying-depth-stencil|copies]] to/from specific aspects of [=depth-or-stencil format=] textures:
 stencil values are tightly packed in an array of bytes;
@@ -95,11 +98,12 @@ depth values are tightly packed in an array of the appropriate type ("depth16uno
         Required if there are multiple [=texel images=] (i.e. the copy depth is more than one).
 </dl>
 
-<h4 id=gpuimagecopybuffer data-dfn-type=dictionary>`GPUTexelCopyBufferData`
+<h4 id=gputexelcopybufferdata data-dfn-type=dictionary>`GPUTexelCopyBufferData`
 <span id=gpu-image-copy-buffer></span>
+<span id=gpuimagecopybuffer></span>
 </h4>
 
-In an [=image copy=] operation, {{GPUTexelCopyBufferData}} defines a {{GPUBuffer}} and, together with
+In a [=texel copy=] operation, {{GPUTexelCopyBufferData}} defines a {{GPUBuffer}} and, together with
 the `copySize`, how image data is laid out in the buffer's memory (see {{GPUTexelCopyBufferLayout}}).
 
 <script type=idl>
@@ -121,7 +125,7 @@ dictionary GPUTexelCopyBufferData
 
     **Arguments:**
 
-    - {{GPUTexelCopyBufferData}} |imageCopyBuffer|
+    - {{GPUTexelCopyBufferData}} |data|
 
     **Returns:** {{boolean}}
 
@@ -130,16 +134,17 @@ dictionary GPUTexelCopyBufferData
     1. Return `true` if and only if all of the following conditions are satisfied:
 
         <div class=validusage>
-            - |imageCopyBuffer|.{{GPUTexelCopyBufferData/buffer}} must be a [=valid=] {{GPUBuffer}}.
-            - |imageCopyBuffer|.{{GPUTexelCopyBufferLayout/bytesPerRow}} must be a multiple of 256.
+            - |data|.{{GPUTexelCopyBufferData/buffer}} must be a [=valid=] {{GPUBuffer}}.
+            - |data|.{{GPUTexelCopyBufferLayout/bytesPerRow}} must be a multiple of 256.
         </div>
 </div>
 
-<h4 id=gpuimagecopytexture data-dfn-type=dictionary>`GPUTexelCopyTextureData`
+<h4 id=gputexelcopytexturedata data-dfn-type=dictionary>`GPUTexelCopyTextureData`
 <span id=gpu-image-copy-texture></span>
+<span id=gpuimagecopytexture></span>
 </h4>
 
-In an [=image copy=] operation, a {{GPUTexelCopyTextureData}} defines a {{GPUTexture}} and, together with
+In a [=texel copy=] operation, a {{GPUTexelCopyTextureData}} defines a {{GPUTexture}} and, together with
 the `copySize`, the sub-region of the texture (spanning one or more contiguous
 [=texture subresources=] at the same mip-map level).
 
@@ -193,56 +198,56 @@ dictionary GPUTexelCopyTextureData {
 </div>
 
 <div algorithm data-timeline=const>
-    The <dfn abstract-op>texel block byte offset</dfn> of data described by {{GPUTexelCopyBufferLayout}} |dataLayout|
+    The <dfn abstract-op>texel block byte offset</dfn> of data described by {{GPUTexelCopyBufferLayout}} |bufferLayout|
     corresponding to [=texel block=] |x|, |y| of depth slice or array layer |z| of a {{GPUTexture}} |texture| is
     determined by running the following steps:
 
         1. Let |blockBytes| be the [=texel block copy footprint=] of |texture|.{{GPUTexture/format}}.
-        1. Let |imageOffset| be (|z| &times; |dataLayout|.{{GPUTexelCopyBufferLayout/rowsPerImage}} &times;
-            |dataLayout|.{{GPUTexelCopyBufferLayout/bytesPerRow}}) &plus; |dataLayout|.{{GPUTexelCopyBufferLayout/offset}}.
-        1. Let |rowOffset| be (|y| &times; |dataLayout|.{{GPUTexelCopyBufferLayout/bytesPerRow}}) &plus; |imageOffset|.
+        1. Let |imageOffset| be (|z| &times; |bufferLayout|.{{GPUTexelCopyBufferLayout/rowsPerImage}} &times;
+            |bufferLayout|.{{GPUTexelCopyBufferLayout/bytesPerRow}}) &plus; |bufferLayout|.{{GPUTexelCopyBufferLayout/offset}}.
+        1. Let |rowOffset| be (|y| &times; |bufferLayout|.{{GPUTexelCopyBufferLayout/bytesPerRow}}) &plus; |imageOffset|.
         1. Let |blockOffset| be (|x| &times; |blockBytes|) &plus; |rowOffset|.
         1. Return |blockOffset|.
 </div>
 
 <div algorithm data-timeline=device>
-    <dfn abstract-op>validating GPUTexelCopyTextureData</dfn>(|imageCopyTexture|, |copySize|)
+    <dfn abstract-op>validating GPUTexelCopyTextureData</dfn>(|data|, |copySize|)
 
     **Arguments:**
 
-    - {{GPUTexelCopyTextureData}} |imageCopyTexture|
+    - {{GPUTexelCopyTextureData}} |data|
     - {{GPUExtent3D}} |copySize|
 
     **Returns:** {{boolean}}
 
     [=Device timeline=] steps:
 
-    1. Let |blockWidth| be the [=texel block width=] of |imageCopyTexture|.{{GPUTexelCopyTextureData/texture}}.{{GPUTexture/format}}.
-    1. Let |blockHeight| be the [=texel block height=] of |imageCopyTexture|.{{GPUTexelCopyTextureData/texture}}.{{GPUTexture/format}}.
+    1. Let |blockWidth| be the [=texel block width=] of |data|.{{GPUTexelCopyTextureData/texture}}.{{GPUTexture/format}}.
+    1. Let |blockHeight| be the [=texel block height=] of |data|.{{GPUTexelCopyTextureData/texture}}.{{GPUTexture/format}}.
 
     1. Return `true` if and only if all of the following conditions apply:
 
         <div class=validusage>
-            - [$validating texture copy range$](|imageCopyTexture|, |copySize|) returns `true`.
-            - |imageCopyTexture|.{{GPUTexelCopyTextureData/texture}} must be a [=valid=] {{GPUTexture}}.
-            - |imageCopyTexture|.{{GPUTexelCopyTextureData/mipLevel}} must be &lt;
-                |imageCopyTexture|.{{GPUTexelCopyTextureData/texture}}.{{GPUTexture/mipLevelCount}}.
-            - |imageCopyTexture|.{{GPUTexelCopyTextureData/origin}}.[=GPUOrigin3D/x=] must be a multiple of |blockWidth|.
-            - |imageCopyTexture|.{{GPUTexelCopyTextureData/origin}}.[=GPUOrigin3D/y=] must be a multiple of |blockHeight|.
-            - The [=imageCopyTexture physical subresource size=] of |imageCopyTexture| is equal to |copySize| if either of
+            - [$validating texture copy range$](|data|, |copySize|) returns `true`.
+            - |data|.{{GPUTexelCopyTextureData/texture}} must be a [=valid=] {{GPUTexture}}.
+            - |data|.{{GPUTexelCopyTextureData/mipLevel}} must be &lt;
+                |data|.{{GPUTexelCopyTextureData/texture}}.{{GPUTexture/mipLevelCount}}.
+            - |data|.{{GPUTexelCopyTextureData/origin}}.[=GPUOrigin3D/x=] must be a multiple of |blockWidth|.
+            - |data|.{{GPUTexelCopyTextureData/origin}}.[=GPUOrigin3D/y=] must be a multiple of |blockHeight|.
+            - The [=GPUTexelCopyTextureData physical subresource size=] of |data| is equal to |copySize| if either of
                 the following conditions is true:
-                - |imageCopyTexture|.{{GPUTexelCopyTextureData/texture}}.{{GPUTexture/format}} is a depth-stencil format.
-                - |imageCopyTexture|.{{GPUTexelCopyTextureData/texture}}.{{GPUTexture/sampleCount}} &gt; 1.
+                - |data|.{{GPUTexelCopyTextureData/texture}}.{{GPUTexture/format}} is a depth-stencil format.
+                - |data|.{{GPUTexelCopyTextureData/texture}}.{{GPUTexture/sampleCount}} &gt; 1.
         </div>
 </div>
 
 <div algorithm data-timeline=device>
-    <dfn abstract-op>validating texture buffer copy</dfn>(|imageCopyTexture|, |dataLayout|, |dataLength|, |copySize|, |textureUsage|, |aligned|)
+    <dfn abstract-op>validating texture buffer copy</dfn>(|textureData|, |bufferLayout|, |dataLength|, |copySize|, |textureUsage|, |aligned|)
 
     **Arguments:**
 
-    - {{GPUTexelCopyTextureData}} |imageCopyTexture|
-    - {{GPUTexelCopyBufferLayout}} |dataLayout|
+    - {{GPUTexelCopyTextureData}} |textureData|
+    - {{GPUTexelCopyBufferLayout}} |bufferLayout|
     - {{GPUSize64Out}} |dataLength|
     - {{GPUExtent3D}} |copySize|
     - {{GPUTextureUsage}} |textureUsage|
@@ -252,40 +257,41 @@ dictionary GPUTexelCopyTextureData {
 
     [=Device timeline=] steps:
 
-    1. Let |texture| be |imageCopyTexture|.{{GPUTexelCopyTextureData/texture}}
+    1. Let |texture| be |textureData|.{{GPUTexelCopyTextureData/texture}}
     1. Let |aspectSpecificFormat| = |texture|.{{GPUTexture/format}}.
     1. Let |offsetAlignment| = [=texel block copy footprint=] of |texture|.{{GPUTexture/format}}.
 
     1. Return `true` if and only if all of the following conditions apply:
 
         <div class=validusage>
-            1. [$validating GPUTexelCopyTextureData$](|imageCopyTexture|, |copySize|) returns `true`.
+            1. [$validating GPUTexelCopyTextureData$](|textureData|, |copySize|) returns `true`.
             1. |texture|.{{GPUTexture/sampleCount}} is 1.
             1. |texture|.{{GPUTexture/usage}} contains |textureUsage|.
             1. If |texture|.{{GPUTexture/format}} is a [=depth-or-stencil format=] format:
-                1. |imageCopyTexture|.{{GPUTexelCopyTextureData/aspect}} must refer to a single aspect of
+                1. |textureData|.{{GPUTexelCopyTextureData/aspect}} must refer to a single aspect of
                     |texture|.{{GPUTexture/format}}.
                 1. If |textureUsage| is:
                     <dl class=switch>
                         : {{GPUTextureUsage/COPY_SRC}}
-                        :: That aspect must be a valid image copy source according to [[#depth-formats]].
+                        :: That aspect must be a valid texel copy source according to [[#depth-formats]].
 
                         : {{GPUTextureUsage/COPY_DST}}
-                        :: That aspect must be a valid image copy destination according to [[#depth-formats]].
+                        :: That aspect must be a valid texel copy destination according to [[#depth-formats]].
                     </dl>
                 1. Set |aspectSpecificFormat| to the [=aspect-specific format=] according to [[#depth-formats]].
                 1. Set |offsetAlignment| to 4.
             1. If |aligned| is `true`:
-                1. |dataLayout|.{{GPUTexelCopyBufferLayout/offset}} is a multiple of |offsetAlignment|.
-            1. [$validating linear texture data$](|dataLayout|,
+                1. |bufferLayout|.{{GPUTexelCopyBufferLayout/offset}} is a multiple of |offsetAlignment|.
+            1. [$validating linear texture data$](|bufferLayout|,
                 |dataLength|,
                 |aspectSpecificFormat|,
                 |copySize|) succeeds.
         </div>
 </div>
 
-<h4 id=gpuimagecopytexturetagged data-dfn-type=dictionary>`GPUCopyExternalImageDestination`
+<h4 id=gpucopyexternalimagedestination data-dfn-type=dictionary>`GPUCopyExternalImageDestination`
 <span id=gpu-image-copy-texture-tagged></span>
+<span id=gpuimagecopytexturetagged></span>
 </h4>
 
 WebGPU textures hold raw numeric data, and are not tagged with semantic metadata describing colors.
@@ -332,8 +338,9 @@ dictionary GPUCopyExternalImageDestination
         conversion may not be necessary. See [[#color-space-conversion-elision]].
 </dl>
 
-<h4 id=gpuimagecopyexternalimage data-dfn-type=dictionary>`GPUCopyExternalImageSource`
+<h4 id=gpucopyexternalimagesource data-dfn-type=dictionary>`GPUCopyExternalImageSource`
 <span id=gpu-image-copy-external-image></span>
+<span id=gpuimagecopyexternalimage></span>
 </h4>
 
 <script type=idl>
@@ -357,7 +364,7 @@ dictionary GPUCopyExternalImageSource {
 <dl dfn-type=dict-member dfn-for=GPUCopyExternalImageSource>
     : <dfn>source</dfn>
     ::
-        The source of the [=image copy=]. The copy source data is captured at the moment that
+        The source of the [=texel copy=]. The copy source data is captured at the moment that
         {{GPUQueue/copyExternalImageToTexture()}} is issued. Source size is determined as described
         by the [=external source dimensions=] table.
 
@@ -424,20 +431,20 @@ are defined by the source type, given by this table:
 
 ### Subroutines ### {#image-copies-subroutines}
 
-<div algorithm="imageCopyTexture physical subresource size" data-timeline=const>
-    <dfn dfn>imageCopyTexture physical subresource size</dfn>
+<div algorithm="GPUTexelCopyTextureData physical subresource size" data-timeline=const>
+    <dfn dfn>GPUTexelCopyTextureData physical subresource size</dfn>
 
     **Arguments:**
 
-    - {{GPUTexelCopyTextureData}} |imageCopyTexture|
+    - {{GPUTexelCopyTextureData}} |data|
 
     **Returns:** {{GPUExtent3D}}
 
-    The [=imageCopyTexture physical subresource size=] of |imageCopyTexture| is calculated as follows:
+    The [=GPUTexelCopyTextureData physical subresource size=] of |data| is calculated as follows:
 
     Its [=GPUExtent3D/width=], [=GPUExtent3D/height=] and [=GPUExtent3D/depthOrArrayLayers=] are the width, height, and depth, respectively,
-    of the [=physical miplevel-specific texture extent=] of |imageCopyTexture|.{{GPUTexelCopyTextureData/texture}} [=subresource=] at [=mipmap level=]
-    |imageCopyTexture|.{{GPUTexelCopyTextureData/mipLevel}}.
+    of the [=physical miplevel-specific texture extent=] of |data|.{{GPUTexelCopyTextureData/texture}} [=subresource=] at [=mipmap level=]
+    |data|.{{GPUTexelCopyTextureData/mipLevel}}.
 </div>
 
 <div algorithm data-timeline=device>
@@ -500,22 +507,22 @@ are defined by the source type, given by this table:
 
     **Arguments:**
 
-    : {{GPUTexelCopyTextureData}} |imageCopyTexture|
+    : {{GPUTexelCopyTextureData}} |data|
     :: The texture subresource being copied into and copy origin.
     : {{GPUExtent3D}} |copySize|
     :: The size of the texture.
 
     [=Device timeline=] steps:
 
-    1. Let |blockWidth| be the [=texel block width=] of |imageCopyTexture|.{{GPUTexelCopyTextureData/texture}}.{{GPUTexture/format}}.
-    1. Let |blockHeight| be the [=texel block height=] of |imageCopyTexture|.{{GPUTexelCopyTextureData/texture}}.{{GPUTexture/format}}.
-    1. Let |subresourceSize| be the [=imageCopyTexture physical subresource size=] of |imageCopyTexture|.
+    1. Let |blockWidth| be the [=texel block width=] of |data|.{{GPUTexelCopyTextureData/texture}}.{{GPUTexture/format}}.
+    1. Let |blockHeight| be the [=texel block height=] of |data|.{{GPUTexelCopyTextureData/texture}}.{{GPUTexture/format}}.
+    1. Let |subresourceSize| be the [=GPUTexelCopyTextureData physical subresource size=] of |data|.
     1. Return whether all the conditions below are satisfied:
 
         <div class=validusage>
-            - (|imageCopyTexture|.{{GPUTexelCopyTextureData/origin}}.[=GPUOrigin3D/x=] + |copySize|.[=GPUExtent3D/width=]) &le; |subresourceSize|.[=GPUExtent3D/width=]
-            - (|imageCopyTexture|.{{GPUTexelCopyTextureData/origin}}.[=GPUOrigin3D/y=] + |copySize|.[=GPUExtent3D/height=]) &le; |subresourceSize|.[=GPUExtent3D/height=]
-            - (|imageCopyTexture|.{{GPUTexelCopyTextureData/origin}}.[=GPUOrigin3D/z=] + |copySize|.[=GPUExtent3D/depthOrArrayLayers=]) &le; |subresourceSize|.[=GPUExtent3D/depthOrArrayLayers=]
+            - (|data|.{{GPUTexelCopyTextureData/origin}}.[=GPUOrigin3D/x=] + |copySize|.[=GPUExtent3D/width=]) &le; |subresourceSize|.[=GPUExtent3D/width=]
+            - (|data|.{{GPUTexelCopyTextureData/origin}}.[=GPUOrigin3D/y=] + |copySize|.[=GPUExtent3D/height=]) &le; |subresourceSize|.[=GPUExtent3D/height=]
+            - (|data|.{{GPUTexelCopyTextureData/origin}}.[=GPUOrigin3D/z=] + |copySize|.[=GPUExtent3D/depthOrArrayLayers=]) &le; |subresourceSize|.[=GPUExtent3D/depthOrArrayLayers=]
             - |copySize|.[=GPUExtent3D/width=] must be a multiple of |blockWidth|.
             - |copySize|.[=GPUExtent3D/height=] must be a multiple of |blockHeight|.
 
@@ -534,17 +541,17 @@ are defined by the source type, given by this table:
 </div>
 
 <div algorithm data-timeline=const>
-    The <dfn abstract-op>set of subresources for texture copy</dfn>(|imageCopyTexture|, |copySize|)
-    is the subset of subresources of |texture| = |imageCopyTexture|.{{GPUTexelCopyTextureData/texture}}
+    The <dfn abstract-op>set of subresources for texture copy</dfn>(|data|, |copySize|)
+    is the subset of subresources of |texture| = |data|.{{GPUTexelCopyTextureData/texture}}
     for which each subresource |s| satisfies the following:
 
     - The [=mipmap level=] of |s| equals
-        |imageCopyTexture|.{{GPUTexelCopyTextureData/mipLevel}}.
+        |data|.{{GPUTexelCopyTextureData/mipLevel}}.
     - The [=aspect=] of |s| is in the [=GPUTextureAspect/set of aspects=] of
-        |imageCopyTexture|.{{GPUTexelCopyTextureData/aspect}}.
+        |data|.{{GPUTexelCopyTextureData/aspect}}.
     - If |texture|.{{GPUTexture/dimension}} is {{GPUTextureDimension/"2d"}}:
         - The [=array layer=] of |s| is &ge;
-            |imageCopyTexture|.{{GPUTexelCopyTextureData/origin}}.[=GPUOrigin3D/z=] and &lt;
-            |imageCopyTexture|.{{GPUTexelCopyTextureData/origin}}.[=GPUOrigin3D/z=] +
+            |data|.{{GPUTexelCopyTextureData/origin}}.[=GPUOrigin3D/z=] and &lt;
+            |data|.{{GPUTexelCopyTextureData/origin}}.[=GPUOrigin3D/z=] +
             |copySize|.[=GPUExtent3D/depthOrArrayLayers=].
 </div>

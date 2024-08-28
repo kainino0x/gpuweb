@@ -343,10 +343,10 @@ typedef (ImageBitmap or
          HTMLVideoElement or
          VideoFrame or
          HTMLCanvasElement or
-         OffscreenCanvas) GPUImageCopyExternalImageSource;
+         OffscreenCanvas) GPUCopyExternalImageSourceObject;
 
 dictionary GPUCopyExternalImageSource {
-    required GPUImageCopyExternalImageSource source;
+    required GPUCopyExternalImageSourceObject source;
     GPUOrigin2D origin = {};
     boolean flipY = false;
 };

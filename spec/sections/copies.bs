@@ -76,8 +76,8 @@ depth values are tightly packed in an array of the appropriate type ("depth16uno
 <dl dfn-type=dict-member dfn-for=GPUTexelCopyBufferLayout>
     : <dfn>offset</dfn>
     ::
-        The offset, in bytes, from the beginning of the image data source (such as a
-        {{GPUTexelCopyBufferData/buffer|GPUTexelCopyBufferData.buffer}}) to the start of the image data
+        The offset, in bytes, from the beginning of the data source (such as a
+        {{GPUTexelCopyBufferData/buffer|GPUTexelCopyBufferData.buffer}}) to the start of the texel data
         within that source.
 
     : <dfn>bytesPerRow</dfn>
@@ -104,7 +104,7 @@ depth values are tightly packed in an array of the appropriate type ("depth16uno
 </h4>
 
 In a [=texel copy=] operation, {{GPUTexelCopyBufferData}} defines a {{GPUBuffer}} and, together with
-the `copySize`, how image data is laid out in the buffer's memory (see {{GPUTexelCopyBufferLayout}}).
+the `copySize`, how texel data is laid out in the buffer's memory (see {{GPUTexelCopyBufferLayout}}).
 
 <script type=idl>
 dictionary GPUTexelCopyBufferData
@@ -116,7 +116,7 @@ dictionary GPUTexelCopyBufferData
 <dl dfn-type=dict-member dfn-for=GPUTexelCopyBufferData>
     : <dfn>buffer</dfn>
     ::
-        A buffer which either contains image data to be copied or will store the image data being
+        A buffer which either contains texel data to be copied or will store the texel data being
         copied, depending on the method it is being passed to.
 </dl>
 

@@ -11796,18 +11796,18 @@ It must only be included by interfaces which also include those mixins.
                 1. If |dataSize| is missing,
                     let |contentsSize| be |dataElementCount| &minus; |dataOffset|.
                     Otherwise, let |contentsSize| be |dataSize|.
+                1. Let |contentsBytes| be |contentsSize| converted to bytes.
                 1. If any of the following conditions are unsatisfied,
                     throw an {{OperationError}} and return.
 
                     <div class=validusage>
-                        - |contentsSize| &ge; 0.
-                        - |dataOffset| + |contentsSize| &le; |dataElementCount|.
-                        - |contentsSize|, converted to bytes, is a multiple of 4.
+                        - |contentsSize| &ge; 0 elements.
+                        - |dataOffset| + |contentsSize| &le; |dataElementCount| elements.
+                        - |contentsBytes| is a multiple of 4 bytes.
                     </div>
                 1. Let |dataContents| be [=get a copy of the buffer source|a copy of the bytes held by the buffer source=] |data|.
                 1. Let |contents| be the |contentsSize| elements of |dataContents| starting at
                     an offset of |dataOffset| elements.
-                1. Let |contentsBytes| be |contentsSize| converted to bytes.
                 1. Issue the subsequent steps on the [=Device timeline=] of |this|.{{GPUObjectBase/[[device]]}}.
             </div>
             <div data-timeline=device>
@@ -11817,8 +11817,8 @@ It must only be included by interfaces which also include those mixins.
                 1. If any of the following conditions are unsatisfied, [$invalidate$] |this| and return.
 
                     <div class=validusage>
-                        - |rangeOffset| is a multiple of 4.
-                        - |rangeOffset| + |contentsBytes| &le; |this|.{{GPUObjectBase/[[device]]}}.{{device/[[limits]]}}.{{supported limits/maxImmediateSize}}.
+                        - |rangeOffset| is a multiple of 4 bytes.
+                        - |rangeOffset| + |contentsBytes| &le; |this|.{{GPUObjectBase/[[device]]}}.{{device/[[limits]]}}.{{supported limits/maxImmediateSize}} bytes.
                     </div>
                 1. For each byte |b| at index |i| in |contents|:
                     1. Let |byteIndex| be |rangeOffset| + |i|.
@@ -12114,11 +12114,7 @@ dictionary GPUComputePassDescriptor
                 1. If any of the following conditions are unsatisfied, [$invalidate$] |this| and return.
 
                     <div class=validusage>
-                        - |usageScope| must satisfy [=usage scope validation=].
-                        - [$Validate encoder bind groups$](|this|, |this|.{{GPUComputePassEncoder/[[pipeline]]}})
-                            is `true`.
-                        - [$Validate immediate data$](|this|, |this|.{{GPUComputePassEncoder/[[pipeline]]}})
-                            is `true`.
+                        - it must be [$valid to dispatch$] with |this|.
                         - all of |workgroupCountX|, |workgroupCountY| and |workgroupCountZ| are &le;
                             |this|.device.limits.{{supported limits/maxComputeWorkgroupsPerDimension}}.
                         - let |workgroupSize| be the computed workgroup size for
@@ -12164,7 +12160,7 @@ dictionary GPUComputePassDescriptor
             dispatchIndirectParameters[2] = workgroupCountZ;
         </pre>
 
-        <div algorithm=GPUComputePassEncoder.dispatchIndirect>
+        <div algorithm=GPUComputePassEncoder.dispatchWorkgroupsIndirect>
             <div data-timeline=content>
                 **Called on:** {{GPUComputePassEncoder}} this.
 
@@ -12195,11 +12191,7 @@ dictionary GPUComputePassDescriptor
                 1. If any of the following conditions are unsatisfied, [$invalidate$] |this| and return.
 
                     <div class=validusage>
-                        - |usageScope| must satisfy [=usage scope validation=].
-                        - [$Validate encoder bind groups$](|this|, |this|.{{GPUComputePassEncoder/[[pipeline]]}})
-                            is `true`.
-                        - [$Validate immediate data$](|this|, |this|.{{GPUComputePassEncoder/[[pipeline]]}})
-                            is `true`.
+                        - it must be [$valid to dispatch$] with |this|.
                         - |indirectBuffer| is [$valid to use with$] |this|.
                         - |indirectBuffer|.{{GPUBuffer/usage}} contains {{GPUBufferUsage/INDIRECT}}.
                         - |indirectOffset| + sizeof([=indirect dispatch parameters=]) &le;
@@ -12238,6 +12230,21 @@ dictionary GPUComputePassDescriptor
             </div>
         </div>
 </dl>
+
+<div algorithm data-timeline=device>
+    To determine if it's <dfn abstract-op>valid to dispatch</dfn> with {{GPUComputePassEncoder}} |encoder|,
+    run the following [=device timeline=] steps:
+
+    1. If any of the following requirements are unmet, return `false`:
+
+        <div class=validusage>
+            - |usageScope| must satisfy [=usage scope validation=].
+            - [$Validate encoder bind groups$](|this|, |this|.{{GPUComputePassEncoder/[[pipeline]]}}) must be `true`.
+            - [$Validate immediate data$](|this|, |this|.{{GPUComputePassEncoder/[[pipeline]]}}) must be `true`.
+        </div>
+
+        Otherwise, return `true`.
+</div>
 
 ### Finalization ### {#compute-pass-encoder-finalization}
 
@@ -13937,10 +13944,10 @@ attachments used by this encoder.
         Executes the commands previously recorded into the given {{GPURenderBundle}}s as part of
         this render pass.
 
-        When a {{GPURenderBundle}} is executed, it does not inherit the render pass's pipeline, bind
-        groups, immediate data, or vertex and index buffers. After a {{GPURenderBundle}} has executed, the render
-        pass's pipeline, bind group, immediate data, and vertex/index buffer state is cleared
-        (to the initial, empty values).
+        When a {{GPURenderBundle}} is executed, it does not inherit the render pass's binding state
+        (pipeline, bind groups, immediate data, vertex buffers, and index buffer).
+        After a {{GPURenderBundle}} has executed, the render pass's binding state is
+        [$Reset the render pass binding state|cleared$] to the initial, empty values.
 
         Note: The state is cleared, not restored to the previous state.
         This occurs even if zero {{GPURenderBundle|GPURenderBundles}} are executed.
@@ -14300,13 +14307,14 @@ GPUQueue includes GPUObjectBase;
                 1. If |size| is missing,
                     let |contentsSize| be |dataSize| &minus; |dataOffset|.
                     Otherwise, let |contentsSize| be |size|.
+                1. Let |contentsBytes| be |contentsSize| converted to bytes.
                 1. If any of the following conditions are unsatisfied,
                     throw an {{OperationError}} and return.
 
                     <div class=validusage>
-                        - |contentsSize| &ge; 0.
-                        - |dataOffset| + |contentsSize| &le; |dataSize|.
-                        - |contentsSize|, converted to bytes, is a multiple of 4 bytes.
+                        - |contentsSize| &ge; 0 elements.
+                        - |dataOffset| + |contentsSize| &le; |dataSize| elements.
+                        - |contentsBytes| is a multiple of 4 bytes.
                     </div>
                 1. Let |dataContents| be [=get a copy of the buffer source|a copy of the bytes held by the buffer source=] |data|.
                 1. Let |contents| be the |contentsSize| elements of |dataContents| starting at
@@ -14323,15 +14331,15 @@ GPUQueue includes GPUObjectBase;
                         - |buffer| is [$valid to use with$] |this|.
                         - |buffer|.{{GPUBuffer/[[internal state]]}} is "[=GPUBuffer/[[internal state]]/available=]".
                         - |buffer|.{{GPUBuffer/usage}} includes {{GPUBufferUsage/COPY_DST}}.
-                        - |bufferOffset|, converted to bytes, is a multiple of 4 bytes.
-                        - |bufferOffset| + |contentsSize|, converted to bytes, &le; |buffer|.{{GPUBuffer/size}} bytes.
+                        - |bufferOffset| is a multiple of 4 bytes.
+                        - |bufferOffset| + |contentsBytes| &le; |buffer|.{{GPUBuffer/size}} bytes.
                     </div>
                 1. Issue the subsequent steps on the [=Queue timeline=] of |this|.
             </div>
             <div data-timeline=queue>
                 [=Queue timeline=] steps:
 
-                1. Write |contents| into |buffer| starting at |bufferOffset|.
+                1. Write |contents| into |buffer| starting at byte offset |bufferOffset|.
             </div>
         </div>
 

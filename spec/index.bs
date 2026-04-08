@@ -13150,6 +13150,10 @@ It must only be included by interfaces which also include those mixins.
     ::
         The current {{GPUBuffer}}s to read vertex data from for each slot.
 
+    : <dfn>\[[vertex_buffer_offsets]]</dfn>, of type [=ordered map=]&lt;slot, {{GPUSize64}}&gt;, initially empty
+    ::
+        The offset in bytes of the section of {{GPUBuffer}} currently set for each slot.
+
     : <dfn>\[[vertex_buffer_sizes]]</dfn>, of type [=ordered map=]&lt;slot, {{GPUSize64}}&gt;, initially empty
     ::
         The size in bytes of the section of {{GPUBuffer}} currently set for each slot.
@@ -13298,6 +13302,7 @@ It must only be included by interfaces which also include those mixins.
                     </div>
                 1. If |buffer| is `null`:
                     1. [=map/Remove=] |this|.{{GPURenderCommandsMixin/[[vertex_buffers]]}}[|slot|].
+                    1. [=map/Remove=] |this|.{{GPURenderCommandsMixin/[[vertex_buffer_offsets]]}}[|slot|].
                     1. [=map/Remove=] |this|.{{GPURenderCommandsMixin/[[vertex_buffer_sizes]]}}[|slot|].
 
                     Otherwise:
@@ -13311,6 +13316,7 @@ It must only be included by interfaces which also include those mixins.
                     1. [$usage scope/Add$] |buffer| to {{GPURenderCommandsMixin/[[usage scope]]}}
                         with usage [=internal usage/input=].
                     1. Set |this|.{{GPURenderCommandsMixin/[[vertex_buffers]]}}[|slot|] to be |buffer|.
+                    1. Set |this|.{{GPURenderCommandsMixin/[[vertex_buffer_offsets]]}}[|slot|] to be |offset|.
                     1. Set |this|.{{GPURenderCommandsMixin/[[vertex_buffer_sizes]]}}[|slot|] to be |size|.
             </div>
         </div>
@@ -13415,6 +13421,8 @@ It must only be included by interfaces which also include those mixins.
                 1. If any of the following conditions are unsatisfied, [$invalidate$] |this| and return.
 
                     <div class=validusage>
+                        <!-- Editorial TODO: Dedup these steps as much as possible with draw(). -->
+
                         - It is [$valid to draw indexed$] with |this|.
                         - |firstIndex| + |indexCount| &le; |this|.{{GPURenderCommandsMixin/[[index_buffer_size]]}}
                             &div; |this|.{{GPURenderCommandsMixin/[[index_format]]}}'s byte size;
@@ -14010,11 +14018,16 @@ attachments used by this encoder.
     To <dfn abstract-op>Reset the render pass binding state</dfn> of {{GPURenderPassEncoder}} |encoder| run
     the following [=device timeline=] steps:
 
+    1. Reset all {{GPUBindingCommandsMixin}} state, as follows:
         1. [=map/Clear=] |encoder|.{{GPUBindingCommandsMixin/[[bind_groups]]}}.
+            <!-- Editorial: it's not necessary to clear [[dynamic_offsets]] because it won't be used, but we should refactor it to be part of the same property. -->
         1. Set each entry of |encoder|.{{GPUBindingCommandsMixin/[[immediate_slots_set]]}} to `false`.
+    1. Reset all {{GPURenderCommandsMixin}} state, as follows:
         1. Set |encoder|.{{GPURenderCommandsMixin/[[pipeline]]}} to `null`.
         1. Set |encoder|.{{GPURenderCommandsMixin/[[index_buffer]]}} to `null`.
+            <!-- Editorial: it's not necessary to clear [[index_format]] and [[index_buffer_*]] because they won't used, but we should refactor them to be part of the same property. -->
         1. [=map/Clear=] |encoder|.{{GPURenderCommandsMixin/[[vertex_buffers]]}}.
+            <!-- Editorial: it's not necessary to clear [[vertex_buffer_*]] because they won't be used, but we should refactor them to be part of the same property. -->
 </div>
 
 # Bundles # {#bundles}
@@ -16353,8 +16366,9 @@ clip space positions for [[#primitive-clipping]], as well as other data for the
     1. Let |instanceIndex| be |rawInstanceIndex| + |drawCall|.firstInstance.
     1. For each non-`null` |vertexBufferLayout| in the list of |desc|.{{GPUVertexState/buffers}}:
         1. Let |i| be the index of the buffer layout in this list.
-        1. Let |vertexBuffer|, |vertexBufferOffset|, and |vertexBufferBindingSize| be the
-            buffer, offset, and size at slot |i| of |state|.{{GPURenderCommandsMixin/[[vertex_buffers]]}}.
+        1. Let |vertexBuffer| be |state|.{{GPURenderCommandsMixin/[[vertex_buffers]]}}[|i|].
+        1. Let |vertexBufferOffset| be |state|.{{GPURenderCommandsMixin/[[vertex_buffer_offsets]]}}[|i|].
+        1. Let |vertexBufferBindingSize| be |state|.{{GPURenderCommandsMixin/[[vertex_buffer_sizes]]}}[|i|].
         1. Let |vertexElementIndex| be dependent on |vertexBufferLayout|.{{GPUVertexBufferLayout/stepMode}}:
 
             <dl class=switch>
